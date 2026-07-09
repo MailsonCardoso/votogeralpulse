@@ -1,0 +1,72 @@
+.auth-page {
+  --background: #121524;
+  --background-secondary: #171A31;
+  --background-tertiary: #232547;
+  --card: #151826;
+  --card-hover: #1B1F30;
+  --border: #2A2F45;
+  --primary: #7C5CFF;
+  --primary-hover: #8B6BFF;
+  --secondary: #C85AE9;
+  --text: #FFFFFF;
+  --text-secondary: #C5CAD8;
+  --text-muted: #8D95B2;
+  --input-bg: #181C2B;
+  --input-border: #303754;
+  --input-focus: #7C5CFF;
+  --button-gradient: linear-gradient(90deg, #6D5BFF 0%, #8B5CF6 50%, #C85AE9 100%);
+  --shadow: 0 15px 45px rgba(0,0,0,.35);
+  --glow: 0 0 50px rgba(124,92,255,.20);
+
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 80% 20%, rgba(124,92,255,.18), transparent 35%),
+    radial-gradient(circle at 15% 80%, rgba(200,90,233,.12), transparent 40%),
+    linear-gradient(180deg, #232547 0%, #171A31 55%, #121524 100%);
+}
+
+.auth-page .login-card {
+  background: #151826;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 0 60px rgba(124,92,255,.08);
+  backdrop-filter: blur(18px);
+}
+
+.auth-page input {
+  background: #181C2B;
+  border: 1px solid #303754;
+  color: #fff;
+  border-radius: 12px;
+}
+
+.auth-page input:focus {
+  border-color: #7C5CFF;
+  box-shadow: 0 0 0 4px rgba(124,92,255,.15);
+}
+
+.auth-page .btn-primary {
+  background: linear-gradient(90deg, #6D5BFF, #8B5CF6, #C85AE9);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 35px rgba(124,92,255,.35);
+  transition: .25s;
+}
+
+.auth-page .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(124,92,255,.45);
+}
+
+.auth-page .tab {
+  background: #1A1E2D;
+  color: #AAB2C8;
+}
+
+.auth-page .tab.active {
+  background: #0F1220;
+  color: #fff;
+}

@@ -10,10 +10,8 @@ import { toast } from 'sonner'
 import {
   Building2, Mail, Lock, User, ArrowRight, ShieldCheck, LineChart,
 } from 'lucide-react'
-import { Button } from '~/components/ui/button'
-import { Input, Label } from '~/components/ui/input'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '~/components/ui/tabs'
 import { useSession } from '~/stores/session'
+import './auth.css'
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -95,11 +93,10 @@ function AuthPage() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-card p-10 lg:flex">
-        <div className="grid-bg absolute inset-0 opacity-40" />
+    <div className="auth-page grid min-h-screen lg:grid-cols-2">
+      <div className="relative hidden flex-col justify-between overflow-hidden p-10 lg:flex">
         <div className="relative flex items-center gap-2.5">
-          <div className="flex size-10 items-center justify-center rounded-xl brand-gradient text-white shadow-elegant">
+          <div className="flex size-10 items-center justify-center rounded-xl" style={{ background: 'var(--button-gradient)', color: '#fff' }}>
             <Building2 className="size-5" />
           </div>
           <span className="text-lg font-semibold">VotoGeral 360</span>
@@ -108,7 +105,7 @@ function AuthPage() {
           <h1 className="max-w-md text-3xl font-semibold leading-tight tracking-tight">
             Prospecção eleitoral inteligente para campanhas que vencem.
           </h1>
-          <ul className="space-y-3 text-sm text-muted-foreground">
+          <ul className="space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
             <li className="flex items-center gap-2.5">
               <UsersCheck /> 120 mil eleitores mapeados
             </li>
@@ -120,7 +117,7 @@ function AuthPage() {
             </li>
           </ul>
         </div>
-        <p className="relative text-xs text-muted-foreground">
+        <p className="relative text-xs" style={{ color: 'var(--text-muted)' }}>
           © 2026 VotoGeral 360 — Demonstração com dados fictícios.
         </p>
       </div>
@@ -132,109 +129,119 @@ function AuthPage() {
           className="w-full max-w-sm"
         >
           <div className="mb-6 flex items-center gap-2.5 lg:hidden">
-            <div className="flex size-9 items-center justify-center rounded-xl brand-gradient text-white">
+            <div className="flex size-9 items-center justify-center rounded-xl" style={{ background: 'var(--button-gradient)', color: '#fff' }}>
               <Building2 className="size-5" />
             </div>
             <span className="font-semibold">VotoGeral 360</span>
           </div>
 
           {!mfaOpen ? (
-            <Tabs value={tab} onValueChange={setTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Entrar</TabsTrigger>
-                <TabsTrigger value="registro">Criar conta</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="login">
-                <form
-                  onSubmit={loginForm.handleSubmit(onLogin)}
-                  className="space-y-4"
-                >
-                  <Field
-                    label="E-mail"
-                    icon={<Mail className="size-4" />}
-                    error={loginForm.formState.errors.email?.message}
-                  >
-                    <Input
-                      {...loginForm.register('email')}
-                      placeholder="voce@campanha.com"
-                    />
-                  </Field>
-                  <Field
-                    label="Senha"
-                    icon={<Lock className="size-4" />}
-                    error={loginForm.formState.errors.senha?.message}
-                  >
-                    <Input
-                      type="password"
-                      {...loginForm.register('senha')}
-                      placeholder="••••••••"
-                    />
-                  </Field>
+            <>
+              {/* Abas customizadas */}
+              <div className="login-card p-6">
+                <div className="mb-6 flex rounded-xl p-1" style={{ background: '#1A1E2D' }}>
                   <button
-                    type="button"
-                    onClick={() => setTab('esqueci')}
-                    className="text-xs text-brand hover:underline"
+                    onClick={() => setTab('login')}
+                    className={`tab flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === 'login' ? 'active' : ''}`}
                   >
-                    Esqueci minha senha
+                    Entrar
                   </button>
-                  <Button type="submit" className="w-full">
-                    Entrar <ArrowRight />
-                  </Button>
-                </form>
-              </TabsContent>
+                  <button
+                    onClick={() => setTab('registro')}
+                    className={`tab flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === 'registro' ? 'active' : ''}`}
+                  >
+                    Criar conta
+                  </button>
+                </div>
 
-              <TabsContent value="registro">
-                <form
-                  onSubmit={registroForm.handleSubmit(onRegistro)}
-                  className="space-y-4"
-                >
-                  <Field
-                    label="Nome completo"
-                    icon={<User className="size-4" />}
-                    error={registroForm.formState.errors.nome?.message}
+                {tab === 'login' && (
+                  <form
+                    onSubmit={loginForm.handleSubmit(onLogin)}
+                    className="space-y-4"
                   >
-                    <Input {...registroForm.register('nome')} placeholder="Maria Silva" />
-                  </Field>
-                  <Field
-                    label="E-mail"
-                    icon={<Mail className="size-4" />}
-                    error={registroForm.formState.errors.email?.message}
-                  >
-                    <Input {...registroForm.register('email')} placeholder="voce@campanha.com" />
-                  </Field>
-                  <Field
-                    label="Senha"
-                    icon={<Lock className="size-4" />}
-                    error={registroForm.formState.errors.senha?.message}
-                  >
-                    <Input type="password" {...registroForm.register('senha')} placeholder="••••••••" />
-                  </Field>
-                  <Field
-                    label="Confirmar senha"
-                    icon={<Lock className="size-4" />}
-                    error={registroForm.formState.errors.confirmar?.message}
-                  >
-                    <Input type="password" {...registroForm.register('confirmar')} placeholder="••••••••" />
-                  </Field>
-                  <Button type="submit" className="w-full">
-                    Criar conta <ArrowRight />
-                  </Button>
-                </form>
-              </TabsContent>
+                    <Field
+                      label="E-mail"
+                      error={loginForm.formState.errors.email?.message}
+                    >
+                      <input
+                        {...loginForm.register('email')}
+                        placeholder="voce@campanha.com"
+                        className="w-full px-4 py-2.5 text-sm outline-none"
+                      />
+                    </Field>
+                    <Field
+                      label="Senha"
+                      error={loginForm.formState.errors.senha?.message}
+                    >
+                      <input
+                        type="password"
+                        {...loginForm.register('senha')}
+                        placeholder="••••••••"
+                        className="w-full px-4 py-2.5 text-sm outline-none"
+                      />
+                    </Field>
+                    <button
+                      type="button"
+                      onClick={() => setTab('esqueci')}
+                      className="text-xs hover:underline"
+                      style={{ color: 'var(--primary)' }}
+                    >
+                      Esqueci minha senha
+                    </button>
+                    <button type="submit" className="btn-primary w-full px-4 py-2.5 text-sm font-semibold">
+                      Entrar <ArrowRight className="inline size-4" />
+                    </button>
+                  </form>
+                )}
 
-              <TabsContent value="esqueci">
-                <RecuperarSenha onBack={() => setTab('login')} />
-              </TabsContent>
-            </Tabs>
+                {tab === 'registro' && (
+                  <form
+                    onSubmit={registroForm.handleSubmit(onRegistro)}
+                    className="space-y-4"
+                  >
+                    <Field
+                      label="Nome completo"
+                      error={registroForm.formState.errors.nome?.message}
+                    >
+                      <input {...registroForm.register('nome')} placeholder="Maria Silva" className="w-full px-4 py-2.5 text-sm outline-none" />
+                    </Field>
+                    <Field
+                      label="E-mail"
+                      error={registroForm.formState.errors.email?.message}
+                    >
+                      <input {...registroForm.register('email')} placeholder="voce@campanha.com" className="w-full px-4 py-2.5 text-sm outline-none" />
+                    </Field>
+                    <Field
+                      label="Senha"
+                      error={registroForm.formState.errors.senha?.message}
+                    >
+                      <input type="password" {...registroForm.register('senha')} placeholder="••••••••" className="w-full px-4 py-2.5 text-sm outline-none" />
+                    </Field>
+                    <Field
+                      label="Confirmar senha"
+                      error={registroForm.formState.errors.confirmar?.message}
+                    >
+                      <input type="password" {...registroForm.register('confirmar')} placeholder="••••••••" className="w-full px-4 py-2.5 text-sm outline-none" />
+                    </Field>
+                    <button type="submit" className="btn-primary w-full px-4 py-2.5 text-sm font-semibold">
+                      Criar conta <ArrowRight className="inline size-4" />
+                    </button>
+                  </form>
+                )}
+
+                {tab === 'esqueci' && (
+                  <RecuperarSenha onBack={() => setTab('login')} />
+                )}
+              </div>
+            </>
           ) : (
-            <div className="space-y-5">
+            <div className="login-card space-y-5 p-6">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className="flex size-12 items-center justify-center rounded-xl bg-brand/15 text-brand">
+                <div className="flex size-12 items-center justify-center rounded-xl" style={{ background: 'rgba(124,92,255,.15)', color: 'var(--primary)' }}>
                   <ShieldCheck className="size-6" />
                 </div>
                 <h2 className="text-lg font-semibold">Verificação em duas etapas</h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   Digite o código de 6 dígitos enviado para {pendingEmail}.
                 </p>
               </div>
@@ -246,16 +253,17 @@ function AuthPage() {
                     value={d}
                     onChange={(e) => onMfaChange(i, e.target.value)}
                     inputMode="numeric"
-                    className="h-12 w-11 rounded-lg border border-border bg-card text-center text-lg font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="h-12 w-11 rounded-lg text-center text-lg font-semibold outline-none"
                   />
                 ))}
               </div>
-              <Button className="w-full" onClick={submitMfa}>
-                Verificar e entrar <ArrowRight />
-              </Button>
+              <button className="btn-primary w-full px-4 py-2.5 text-sm font-semibold" onClick={submitMfa}>
+                Verificar e entrar <ArrowRight className="inline size-4" />
+              </button>
               <button
                 onClick={() => setMfaOpen(false)}
-                className="w-full text-center text-xs text-muted-foreground hover:underline"
+                className="w-full text-center text-xs hover:underline"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Voltar
               </button>
@@ -280,16 +288,16 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <label className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</label>
       <div className="relative">
         {icon && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }}>
             {icon}
           </span>
         )}
         <div className={icon ? '[&_input]:pl-9' : ''}>{children}</div>
       </div>
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="text-xs" style={{ color: 'var(--secondary)' }}>{error}</p>}
     </div>
   )
 }
@@ -307,20 +315,22 @@ function RecuperarSenha({ onBack }: { onBack: () => void }) {
       }}
       className="space-y-4"
     >
-      <Field label="E-mail da conta" icon={<Mail className="size-4" />}>
-        <Input
+      <Field label="E-mail da conta">
+        <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="voce@campanha.com"
+          className="w-full px-4 py-2.5 text-sm outline-none"
         />
       </Field>
-      <Button type="submit" className="w-full">
-        Enviar link de recuperação <ArrowRight />
-      </Button>
+      <button type="submit" className="btn-primary w-full px-4 py-2.5 text-sm font-semibold">
+        Enviar link de recuperação <ArrowRight className="inline size-4" />
+      </button>
       <button
         type="button"
         onClick={onBack}
-        className="w-full text-center text-xs text-muted-foreground hover:underline"
+        className="w-full text-center text-xs hover:underline"
+        style={{ color: 'var(--text-muted)' }}
       >
         Voltar ao login
       </button>
@@ -329,5 +339,5 @@ function RecuperarSenha({ onBack }: { onBack: () => void }) {
 }
 
 function UsersCheck() {
-  return <User className="size-4 text-brand" />
+  return <User className="size-4" style={{ color: 'var(--primary)' }} />
 }
