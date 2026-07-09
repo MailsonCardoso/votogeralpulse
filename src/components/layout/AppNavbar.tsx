@@ -25,7 +25,7 @@ import { CommandPalette } from './CommandPalette'
 
 export function AppNavbar() {
   const theme = useThemeStore((s) => s.theme)
-  const toggleTheme = useThemeStore((s) => s.toggleTheme)
+  const toggle = useThemeStore((s) => s.toggle)
   const setCommandOpen = useUI((s) => s.setCommandOpen)
   const commandOpen = useUI((s) => s.commandOpen)
   const notificacoes = useNotificacoes()
@@ -66,7 +66,7 @@ export function AppNavbar() {
 
       <div className="ml-auto flex items-center gap-1.5">
         <button
-          onClick={toggleTheme}
+          onClick={toggle}
           className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-[var(--card-border)]/40"
           aria-label="Alternar tema"
         >
