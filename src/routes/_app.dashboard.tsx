@@ -78,7 +78,7 @@ function Dashboard() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Evolução semanal</CardTitle>
-            <p className="text-sm text-muted">Contatos e conversões nos últimos 7 dias</p>
+            <p className="text-sm text-muted-foreground">Contatos e conversões nos últimos 7 dias</p>
           </CardHeader>
           <CardContent>
             <AreaTrendChart
@@ -95,7 +95,7 @@ function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Intenção de voto</CardTitle>
-            <p className="text-sm text-muted">Distribuição do eleitorado</p>
+            <p className="text-sm text-muted-foreground">Distribuição do eleitorado</p>
           </CardHeader>
           <CardContent>
             <DonutChart data={apoioDist} nameKey="nome" valueKey="valor" />
@@ -147,9 +147,9 @@ function Dashboard() {
                 <div key={m.label}>
                   <div className="mb-1 flex justify-between text-sm">
                     <span>{m.label}</span>
-                    <span className="text-muted">{pct}%</span>
+                    <span className="text-muted-foreground">{pct}%</span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-[var(--card-border)]">
+                  <div className="h-2 overflow-hidden rounded-full bg-border">
                     <div
                       className="h-full rounded-full brand-gradient"
                       style={{ width: `${pct}%` }}
@@ -165,21 +165,21 @@ function Dashboard() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="size-4 text-brand-500" /> Atividade recente
+            <TrendingUp className="size-4 text-brand" /> Atividade recente
           </CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-3">
             {atividades.map((a) => (
               <li key={a.id} className="flex items-start gap-3 text-sm">
-                <span className="mt-1.5 size-2 shrink-0 rounded-full bg-brand-500" />
+                <span className="mt-1.5 size-2 shrink-0 rounded-full bg-brand" />
                 <div className="flex-1">
                   <p>
                     <span className="font-medium">{a.usuario}</span> {a.acao}{' '}
-                    <span className="text-muted">{a.alvo}</span>
+                    <span className="text-muted-foreground">{a.alvo}</span>
                   </p>
                 </div>
-                <span className="text-xs text-muted">{relativeTime(a.tempo)}</span>
+                <span className="text-xs text-muted-foreground">{relativeTime(a.tempo)}</span>
               </li>
             ))}
           </ul>

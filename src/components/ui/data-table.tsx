@@ -90,14 +90,14 @@ export function DataTable<T extends { id: string | number }>({
             setPage(0)
           }}
           placeholder="Buscar..."
-          className="h-9 w-full max-w-xs rounded-lg border border-[var(--card-border)] bg-[var(--bg-elevated)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+          className="h-9 w-full max-w-xs rounded-lg border border-border bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       )}
-      <div className="card overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[var(--card-border)] text-left text-xs uppercase tracking-wide text-muted">
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                 {columns.map((col) => (
                   <th
                     key={col.key}
@@ -128,7 +128,7 @@ export function DataTable<T extends { id: string | number }>({
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={columns.length} className="px-4 py-10 text-center text-muted-foreground">
                     {empty ?? 'Nenhum registro encontrado.'}
                   </td>
                 </tr>
@@ -136,7 +136,7 @@ export function DataTable<T extends { id: string | number }>({
                 rows.map((row) => (
                   <tr
                     key={row.id}
-                    className="border-b border-[var(--card-border)]/60 transition-colors last:border-0 hover:bg-[var(--card-border)]/30"
+                    className="border-b border-border/60 transition-colors last:border-0 hover:bg-accent/30"
                   >
                     {columns.map((col) => (
                       <td key={col.key} className={cn('px-4 py-3', col.className)}>
@@ -150,7 +150,7 @@ export function DataTable<T extends { id: string | number }>({
           </table>
         </div>
       </div>
-      <div className="flex items-center justify-between text-sm text-muted">
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
         <span>
           {sorted.length} registro{sorted.length !== 1 && 's'}
         </span>

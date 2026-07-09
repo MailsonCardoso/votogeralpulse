@@ -39,11 +39,11 @@ function Mapa() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <MapPinned className="size-4 text-brand-500" /> Região metropolitana
+              <MapPinned className="size-4 text-brand" /> Região metropolitana
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--bg-elevated)]">
+            <div className="relative overflow-hidden rounded-xl border border-border bg-card">
               <svg viewBox="0 0 400 280" className="h-[360px] w-full">
                 <defs>
                   <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
@@ -74,7 +74,7 @@ function Mapa() {
                 })}
               </svg>
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted">
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5"><i className="size-3 rounded-full" style={{ background: 'var(--color-success)' }} /> Baixa</span>
               <span className="flex items-center gap-1.5"><i className="size-3 rounded-full" style={{ background: 'var(--color-info)' }} /> Média</span>
               <span className="flex items-center gap-1.5"><i className="size-3 rounded-full" style={{ background: 'var(--color-warning)' }} /> Alta</span>
@@ -94,7 +94,7 @@ function Mapa() {
                 onMouseEnter={() => setHover(d)}
                 className={cn(
                   'flex items-center justify-between rounded-lg px-3 py-2 transition-colors',
-                  hover?.bairro === d.bairro ? 'bg-[var(--card-border)]/40' : '',
+                  hover?.bairro === d.bairro ? 'bg-accent/40' : '',
                 )}
               >
                 <span className="flex items-center gap-2 text-sm">

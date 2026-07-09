@@ -9,7 +9,7 @@ const Input = React.forwardRef<
     type={type}
     ref={ref}
     className={cn(
-      'flex h-9 w-full rounded-lg border border-[var(--card-border)] bg-[var(--bg-elevated)] px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 disabled:cursor-not-allowed disabled:opacity-50',
+      'flex h-9 w-full rounded-lg border border-border bg-card px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
       className,
     )}
     {...props}
@@ -24,7 +24,7 @@ const Textarea = React.forwardRef<
   <textarea
     ref={ref}
     className={cn(
-      'flex min-h-[80px] w-full rounded-lg border border-[var(--card-border)] bg-[var(--bg-elevated)] px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 disabled:cursor-not-allowed disabled:opacity-50',
+      'flex min-h-[80px] w-full rounded-lg border border-border bg-card px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
       className,
     )}
     {...props}
@@ -39,7 +39,7 @@ const Select = React.forwardRef<
   <select
     ref={ref}
     className={cn(
-      'flex h-9 w-full rounded-lg border border-[var(--card-border)] bg-[var(--bg-elevated)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 disabled:cursor-not-allowed disabled:opacity-50',
+      'flex h-9 w-full rounded-lg border border-border bg-card px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
       className,
     )}
     {...props}
@@ -53,7 +53,7 @@ const Label = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <label
     ref={ref}
-    className={cn('text-sm font-medium text-[var(--fg)]', className)}
+    className={cn('text-sm font-medium text-foreground', className)}
     {...props}
   />
 ))
@@ -66,13 +66,13 @@ const Badge = React.forwardRef<
   }
 >(({ className, variant = 'default', ...props }, ref) => {
   const variants: Record<string, string> = {
-    default: 'bg-brand-500/15 text-brand-600 dark:text-brand-300',
+    default: 'bg-brand/15 text-brand',
     success:
-      'bg-[var(--color-success)]/15 text-[var(--color-success)]',
+      'bg-success/15 text-success',
     warning: 'bg-warning/15 text-warning',
-    danger: 'bg-danger/15 text-danger',
+    danger: 'bg-destructive/15 text-destructive',
     info: 'bg-info/15 text-info',
-    outline: 'border border-[var(--card-border)] text-muted',
+    outline: 'border border-border text-muted-foreground',
   }
   return (
     <span

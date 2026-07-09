@@ -45,11 +45,11 @@ export function CommandPalette() {
       onClick={() => setOpen(false)}
     >
       <div
-        className="w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--card)] shadow-2xl"
+        className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 border-b border-[var(--card-border)] px-4">
-          <Search className="size-4 text-muted" />
+        <div className="flex items-center gap-2 border-b border-border px-4">
+          <Search className="size-4 text-muted-foreground" />
           <Input
             ref={inputRef}
             value={q}
@@ -65,16 +65,16 @@ export function CommandPalette() {
         <div className="max-h-[50vh] overflow-y-auto p-2">
           {rotas.length > 0 && (
             <div className="mb-2">
-              <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
+              <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Navegar
               </p>
               {rotas.map((r) => (
                 <button
                   key={r.to}
                   onClick={() => go(r.to)}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-[var(--card-border)]/40"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent/40"
                 >
-                  <r.icon className="size-4 text-muted" />
+                  <r.icon className="size-4 text-muted-foreground" />
                   {r.label}
                 </button>
               ))}
@@ -82,18 +82,18 @@ export function CommandPalette() {
           )}
           {pessoas.length > 0 && (
             <div>
-              <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
+              <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Eleitores
               </p>
               {pessoas.map((e) => (
                 <button
                   key={e.id}
                   onClick={() => go('/eleitores')}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--card-border)]/40"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-accent/40"
                 >
-                  <Users className="size-4 text-muted" />
+                  <Users className="size-4 text-muted-foreground" />
                   <span className="flex-1">{e.nome}</span>
-                  <span className="text-xs text-muted">{e.bairro}</span>
+                  <span className="text-xs text-muted-foreground">{e.bairro}</span>
                 </button>
               ))}
             </div>

@@ -36,7 +36,7 @@ function Campanhas() {
         {CAMPANHAS.map((c) => (
           <Card key={c.id} className="p-5">
             <div className="flex items-start justify-between">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-300">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-brand/15 text-brand">
                 <Megaphone className="size-5" />
               </div>
               <Badge variant={c.status === 'Enviada' ? 'success' : c.status === 'Agendada' ? 'info' : 'outline'}>
@@ -44,13 +44,13 @@ function Campanhas() {
               </Badge>
             </div>
             <h3 className="mt-3 font-semibold">{c.nome}</h3>
-            <div className="mt-2 space-y-1 text-sm text-muted">
+            <div className="mt-2 space-y-1 text-sm text-muted-foreground">
               <p className="flex items-center gap-2"><Users className="size-3.5" /> {c.publico}</p>
               <p className="flex items-center gap-2"><Send className="size-3.5" /> {c.canal}</p>
               <p className="flex items-center gap-2"><Clock className="size-3.5" /> {c.data}</p>
             </div>
-            <div className="mt-3 border-t border-[var(--card-border)] pt-3 text-sm">
-              <span className="text-muted">Alcance: </span>
+            <div className="mt-3 border-t border-border pt-3 text-sm">
+              <span className="text-muted-foreground">Alcance: </span>
               <span className="font-medium">{c.alcance.toLocaleString('pt-BR')}</span>
             </div>
           </Card>

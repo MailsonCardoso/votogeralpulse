@@ -22,7 +22,7 @@ export function PageHeader({
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
         {description && (
-          <p className="text-sm text-muted">{description}</p>
+          <p className="text-sm text-muted-foreground">{description}</p>
         )}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
@@ -42,16 +42,16 @@ export function EmptyState({
   action?: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-[var(--card-border)] px-6 py-14 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border px-6 py-14 text-center">
       {Icon && (
-        <div className="flex size-12 items-center justify-center rounded-full bg-[var(--card-border)]/40 text-muted">
+        <div className="flex size-12 items-center justify-center rounded-full bg-accent/40 text-muted-foreground-foreground">
           <Icon className="size-6" />
         </div>
       )}
       <div className="space-y-1">
         <p className="font-medium">{title}</p>
         {description && (
-          <p className="mx-auto max-w-sm text-sm text-muted">{description}</p>
+          <p className="mx-auto max-w-sm text-sm text-muted-foreground">{description}</p>
         )}
       </div>
       {action}

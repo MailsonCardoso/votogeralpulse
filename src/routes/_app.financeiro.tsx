@@ -69,7 +69,7 @@ function Financeiro() {
                 { key: 'descricao', header: 'Descrição', sortable: true, sortValue: (m: Movimentacao) => m.descricao, render: (m) => (
                   <div>
                     <p className="font-medium">{m.descricao}</p>
-                    <p className="text-xs text-muted">{m.categoria}</p>
+                    <p className="text-xs text-muted-foreground">{m.categoria}</p>
                   </div>
                 ) },
                 { key: 'data', header: 'Data', sortable: true, sortValue: (m: Movimentacao) => m.data, render: (m) => formatDate(m.data) },
@@ -80,7 +80,7 @@ function Financeiro() {
                   </Badge>
                 ) },
                 { key: 'valor', header: 'Valor', sortable: true, sortValue: (m: Movimentacao) => m.valor, render: (m) => (
-                  <span className={m.tipo === 'receita' ? 'text-[var(--color-success)]' : 'text-danger'}>
+                  <span className={m.tipo === 'receita' ? 'text-success' : 'text-destructive'}>
                     {m.tipo === 'receita' ? '+' : '-'} {formatCurrency(m.valor)}
                   </span>
                 ) },

@@ -37,13 +37,13 @@ function Eventos() {
           return (
             <Card key={e.id} className="p-5">
               <div className="flex items-start justify-between">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-300">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-brand/15 text-brand">
                   <Flag className="size-5" />
                 </div>
                 <Badge variant={st.variant}>{st.label}</Badge>
               </div>
               <h3 className="mt-3 font-semibold">{e.titulo}</h3>
-              <div className="mt-2 space-y-1 text-sm text-muted">
+              <div className="mt-2 space-y-1 text-sm text-muted-foreground">
                 <p className="flex items-center gap-2"><MapPin className="size-3.5" /> {e.local} · {e.bairro}</p>
                 <p>{formatDate(e.data)}</p>
                 <p className="flex items-center gap-2"><Users className="size-3.5" /> {formatNumber(e.confirmados)} confirmados</p>

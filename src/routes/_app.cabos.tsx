@@ -31,20 +31,20 @@ function Cabos() {
           return (
             <Card key={c.id} className="p-5">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-300">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-brand/15 text-brand">
                   <Network className="size-5" />
                 </div>
                 <div>
                   <p className="font-semibold">{c.nome}</p>
-                  <p className="text-xs text-muted">{c.regiao}</p>
+                  <p className="text-xs text-muted-foreground">{c.regiao}</p>
                 </div>
               </div>
               <div className="mt-4 space-y-1.5">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted">Performance</span>
+                  <span className="text-muted-foreground">Performance</span>
                   <span className="font-medium">{pct}%</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[var(--card-border)]">
+                <div className="h-2 overflow-hidden rounded-full bg-border">
                   <div
                     className="h-full rounded-full"
                     style={{
@@ -54,13 +54,13 @@ function Cabos() {
                   />
                 </div>
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[var(--card-border)] pt-3 text-sm">
+              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-sm">
                 <div>
-                  <p className="text-xs text-muted">Eleitores</p>
+                  <p className="text-xs text-muted-foreground">Eleitores</p>
                   <p className="font-medium">{formatNumber(c.eleitores)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted">Visitas</p>
+                  <p className="text-xs text-muted-foreground">Visitas</p>
                   <p className="font-medium">{formatNumber(c.visitas)}</p>
                 </div>
               </div>
@@ -83,7 +83,7 @@ function Cabos() {
               [
                 { key: 'nome', header: 'Cabo', sortable: true, sortValue: (c: Cabo) => c.nome, render: (c) => (
                   <div className="flex items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-full bg-brand-500/15 text-xs font-semibold text-brand-600 dark:text-brand-300">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-brand/15 text-xs font-semibold text-brand">
                       {c.nome.split(' ').slice(0, 2).map((p) => p[0]).join('')}
                     </div>
                     <span className="font-medium">{c.nome}</span>

@@ -68,27 +68,27 @@ function Configuracoes() {
               <CardDescription>Escolha o tema da interface.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-[var(--card-border)] p-4">
+              <div className="flex items-center justify-between rounded-lg border border-border p-4">
                 <div className="flex items-center gap-3">
-                  {theme === 'dark' ? <Moon className="size-5 text-brand-500" /> : <Sun className="size-5 text-brand-500" />}
+                  {theme === 'dark' ? <Moon className="size-5 text-brand" /> : <Sun className="size-5 text-brand" />}
                   <div>
                     <p className="font-medium">Modo escuro</p>
-                    <p className="text-sm text-muted">Reduz o cansaço em longas jornadas.</p>
+                    <p className="text-sm text-muted-foreground">Reduz o cansaço em longas jornadas.</p>
                   </div>
                 </div>
                 <Switch checked={theme === 'dark'} onCheckedChange={(v) => setTheme(v ? 'dark' : 'light')} />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-[var(--card-border)] p-4">
+              <div className="flex items-center justify-between rounded-lg border border-border p-4">
                 <div>
                   <p className="font-medium">Notificações push</p>
-                  <p className="text-sm text-muted">Alertas de metas e visitas.</p>
+                  <p className="text-sm text-muted-foreground">Alertas de metas e visitas.</p>
                 </div>
                 <Switch defaultChecked />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-[var(--card-border)] p-4">
+              <div className="flex items-center justify-between rounded-lg border border-border p-4">
                 <div>
                   <p className="font-medium">Relatório semanal</p>
-                  <p className="text-sm text-muted">Resumo toda segunda-feira.</p>
+                  <p className="text-sm text-muted-foreground">Resumo toda segunda-feira.</p>
                 </div>
                 <Switch defaultChecked />
               </div>
@@ -103,12 +103,12 @@ function Configuracoes() {
               <CardDescription>Adicione uma camada extra de proteção.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-[var(--card-border)] p-4">
+              <div className="flex items-center justify-between rounded-lg border border-border p-4">
                 <div className="flex items-center gap-3">
-                  <ShieldCheck className="size-5 text-[var(--color-success)]" />
+                  <ShieldCheck className="size-5 text-success" />
                   <div>
                     <p className="font-medium">MFA por aplicativo</p>
-                    <p className="text-sm text-muted">Google Authenticator / Authy.</p>
+                    <p className="text-sm text-muted-foreground">Google Authenticator / Authy.</p>
                   </div>
                 </div>
                 <Switch />

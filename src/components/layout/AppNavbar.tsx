@@ -46,7 +46,7 @@ export function AppNavbar() {
   }, [setCommandOpen])
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[var(--card-border)] bg-[var(--bg)]/80 px-4 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md">
       <Link to="/dashboard" className="flex items-center gap-2 md:hidden">
         <div className="flex size-8 items-center justify-center rounded-lg brand-gradient text-white">
           <Building2 className="size-4" />
@@ -55,11 +55,11 @@ export function AppNavbar() {
 
       <button
         onClick={() => setCommandOpen(true)}
-        className="flex h-9 flex-1 items-center gap-2 rounded-lg border border-[var(--card-border)] bg-[var(--bg-elevated)] px-3 text-sm text-muted transition-colors hover:border-brand-500/40 md:max-w-md"
+        className="flex h-9 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm text-muted-foreground transition-colors hover:border-brand/40 md:max-w-md"
       >
         <Search className="size-4" />
         <span className="flex-1 text-left">Buscar eleitores, bairros, ações…</span>
-        <kbd className="hidden items-center gap-0.5 rounded border border-[var(--card-border)] px-1.5 py-0.5 text-[10px] font-medium sm:inline-flex">
+        <kbd className="hidden items-center gap-0.5 rounded border border-border px-1.5 py-0.5 text-[10px] font-medium sm:inline-flex">
           <Command className="size-3" />K
         </kbd>
       </button>
@@ -67,7 +67,7 @@ export function AppNavbar() {
       <div className="ml-auto flex items-center gap-1.5">
         <button
           onClick={toggle}
-          className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-[var(--card-border)]/40"
+          className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent/40"
           aria-label="Alternar tema"
         >
           {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
@@ -75,10 +75,10 @@ export function AppNavbar() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="relative flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-[var(--card-border)]/40">
+            <button className="relative flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent/40">
               <Bell className="size-4" />
               {unread > 0 && (
-                <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-danger ring-2 ring-[var(--bg)]" />
+                <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-destructive ring-2 ring-background" />
               )}
             </button>
           </DropdownMenuTrigger>
@@ -90,16 +90,16 @@ export function AppNavbar() {
                 <span
                   className={cn(
                     'mt-1.5 size-2 shrink-0 rounded-full',
-                    n.tipo === 'success' && 'bg-[var(--color-success)]',
+                    n.tipo === 'success' && 'bg-success',
                     n.tipo === 'warning' && 'bg-warning',
-                    n.tipo === 'danger' && 'bg-danger',
+                    n.tipo === 'danger' && 'bg-destructive',
                     n.tipo === 'info' && 'bg-info',
                   )}
                 />
                 <div className="min-w-0">
                   <p className="text-sm font-medium">{n.titulo}</p>
-                  <p className="text-xs text-muted">{n.corpo}</p>
-                  <p className="mt-0.5 text-[11px] text-muted">
+                  <p className="text-xs text-muted-foreground">{n.corpo}</p>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">
                     {relativeTime(n.tempo)}
                   </p>
                 </div>
@@ -110,14 +110,14 @@ export function AppNavbar() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="ml-1 rounded-full outline-none ring-offset-2 ring-brand-500/40 focus-visible:ring-2">
+            <button className="ml-1 rounded-full outline-none ring-offset-2 ring-ring focus-visible:ring-2">
               <AvatarInitials name={user?.name ?? 'Ana Coordenadora'} />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel className="font-normal">
               <p className="text-sm font-medium">{user?.name ?? 'Ana'}</p>
-              <p className="text-xs text-muted">{user?.email ?? 'ana@votogeral.com'}</p>
+              <p className="text-xs text-muted-foreground">{user?.email ?? 'ana@votogeral.com'}</p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate({ to: '/perfil' })}>

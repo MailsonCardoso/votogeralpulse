@@ -31,19 +31,19 @@ function Perfil() {
             </button>
           </div>
           <h3 className="mt-4 text-lg font-semibold">{user?.name ?? 'Ana Coordenadora'}</h3>
-          <p className="text-sm text-muted">{user?.email ?? 'ana@votogeral.com'}</p>
+          <p className="text-sm text-muted-foreground">{user?.email ?? 'ana@votogeral.com'}</p>
           <div className="mt-3 flex gap-2">
             <Badge variant="info">{user?.role ?? 'Coordenador'}</Badge>
             <Badge variant="success">{user?.plan ?? 'Enterprise'}</Badge>
           </div>
           <div className="mt-5 grid w-full grid-cols-2 gap-3 text-center">
-            <div className="rounded-lg border border-[var(--card-border)] p-3">
+            <div className="rounded-lg border border-border p-3">
               <p className="text-xl font-semibold">1.240</p>
-              <p className="text-xs text-muted">Convertidos</p>
+              <p className="text-xs text-muted-foreground">Convertidos</p>
             </div>
-            <div className="rounded-lg border border-[var(--card-border)] p-3">
+            <div className="rounded-lg border border-border p-3">
               <p className="text-xl font-semibold">18</p>
-              <p className="text-xs text-muted">Lideranças</p>
+              <p className="text-xs text-muted-foreground">Lideranças</p>
             </div>
           </div>
         </Card>
@@ -74,7 +74,7 @@ function Perfil() {
             <div className="space-y-1.5">
               <Label>Bio</Label>
               <textarea
-                className="flex min-h-[80px] w-full rounded-lg border border-[var(--card-border)] bg-[var(--bg-elevated)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+                className="flex min-h-[80px] w-full rounded-lg border border-border bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 defaultValue="Coordenadora apaixonada por mobilização de base e dados eleitorais."
               />
             </div>

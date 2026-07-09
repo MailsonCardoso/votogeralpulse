@@ -7,7 +7,7 @@ export function Skeleton({ className }: { className?: string }) {
 
 export function SkeletonCard() {
   return (
-    <div className="card space-y-3 p-5">
+    <div className="bg-card border border-border rounded-xl space-y-3 p-5">
       <Skeleton className="h-4 w-1/3" />
       <Skeleton className="h-8 w-2/3" />
       <Skeleton className="h-3 w-full" />
@@ -17,7 +17,7 @@ export function SkeletonCard() {
 
 export function SkeletonTable({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="card divide-y divide-[var(--card-border)] p-2">
+    <div className="bg-card border border-border rounded-xl divide-y divide-border p-2">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex items-center gap-4 px-3 py-3">
           <Skeleton className="size-9 rounded-full" />

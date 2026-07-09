@@ -57,18 +57,18 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        'sticky top-0 flex h-screen flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] transition-[width] duration-300',
+        'sticky top-0 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-300',
         collapsed ? 'w-[72px]' : 'w-64',
       )}
     >
-      <div className="flex h-16 items-center gap-2.5 border-b border-[var(--sidebar-border)] px-4">
+      <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-4">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-xl brand-gradient text-white shadow-sm">
           <Building2 className="size-5" />
         </div>
         {!collapsed && (
           <div className="leading-tight">
             <p className="text-sm font-semibold">VotoGeral 360</p>
-            <p className="text-[11px] text-muted">Prospecção Eleitoral</p>
+            <p className="text-[11px] text-muted-foreground">Prospecção Eleitoral</p>
           </div>
         )}
       </div>
@@ -77,7 +77,7 @@ export function AppSidebar() {
         {NAV.map((section) => (
           <div key={section.group}>
             {!collapsed && (
-              <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted">
+              <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {section.group}
               </p>
             )}
@@ -92,8 +92,8 @@ export function AppSidebar() {
                     className={cn(
                       'group flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
                       active
-                        ? 'bg-brand-500/15 text-brand-600 dark:text-brand-300'
-                        : 'text-muted hover:bg-[var(--card-border)]/40 hover:text-[var(--fg)]',
+                        ? 'bg-brand/15 text-brand'
+                        : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground',
                       collapsed && 'justify-center',
                     )}
                     title={collapsed ? item.label : undefined}
@@ -108,14 +108,14 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-[var(--sidebar-border)] p-3">
+      <div className="border-t border-sidebar-border p-3">
         <div
           className={cn(
             'flex items-center gap-2.5 rounded-lg px-2 py-2',
             collapsed && 'justify-center',
           )}
         >
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-xs font-semibold text-brand-600 dark:text-brand-300">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand/15 text-xs font-semibold text-brand">
             {user.name
               .split(' ')
               .slice(0, 2)
@@ -125,13 +125,13 @@ export function AppSidebar() {
           {!collapsed && (
             <div className="min-w-0 flex-1 leading-tight">
               <p className="truncate text-sm font-medium">{user.name}</p>
-              <p className="truncate text-[11px] text-muted">{user.email}</p>
+              <p className="truncate text-[11px] text-muted-foreground">{user.email}</p>
             </div>
           )}
         </div>
         <button
           onClick={toggle}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg px-2 py-1.5 text-xs text-muted transition-colors hover:bg-[var(--card-border)]/40"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent/40"
         >
           {collapsed ? <PanelLeft /> : <PanelLeftClose />}
           {!collapsed && 'Recolher'}

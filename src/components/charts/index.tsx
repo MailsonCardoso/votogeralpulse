@@ -31,9 +31,9 @@ function useChartColors() {
 const tooltipClass = {
   contentStyle: {
     borderRadius: 12,
-    border: '1px solid var(--card-border)',
+    border: '1px solid var(--border)',
     background: 'var(--card)',
-    color: 'var(--fg)',
+    color: 'var(--foreground)',
     fontSize: 12,
     boxShadow: '0 10px 30px -10px rgba(0,0,0,0.4)',
   },

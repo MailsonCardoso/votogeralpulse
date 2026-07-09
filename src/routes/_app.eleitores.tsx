@@ -65,7 +65,7 @@ function Eleitores() {
           <AvatarInitials name={e.nome} className="size-8" />
           <div>
             <p className="font-medium">{e.nome}</p>
-            <p className="text-xs text-muted">{e.cpf}</p>
+            <p className="text-xs text-muted-foreground">{e.cpf}</p>
           </div>
         </div>
       ),
@@ -107,7 +107,7 @@ function Eleitores() {
 
       <Card className="flex flex-wrap items-end gap-3 p-4">
         <div className="relative min-w-[200px] flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={filtros.search}
             onChange={(e) => filtros.setSearch(e.target.value)}
@@ -152,42 +152,42 @@ function Eleitores() {
                   <AvatarInitials name={detalhe.nome} className="size-8" />
                   {detalhe.nome}
                 </DialogTitle>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-muted-foreground">
                   {detalhe.bairro} · Zona {detalhe.zona} / Seção {detalhe.secao}
                 </p>
               </DialogHeader>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted">Apoio</span>
+                  <span className="text-muted-foreground">Apoio</span>
                   <Badge variant={APOIO_META[detalhe.apoio].variant}>
                     {APOIO_META[detalhe.apoio].label}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Contato</span>
+                  <span className="text-muted-foreground">Contato</span>
                   <span>{detalhe.telefone}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">E-mail</span>
+                  <span className="text-muted-foreground">E-mail</span>
                   <span className="truncate">{detalhe.email}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Escolaridade</span>
+                  <span className="text-muted-foreground">Escolaridade</span>
                   <span>{detalhe.escolaridade}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Cadastrado em</span>
+                  <span className="text-muted-foreground">Cadastrado em</span>
                   <span>{formatDate(detalhe.cadastradoEm)}</span>
                 </div>
               </div>
-              <div className="rounded-lg border border-[var(--card-border)] p-3">
-                <p className="mb-2 text-xs font-semibold uppercase text-muted">
+              <div className="rounded-lg border border-border p-3">
+                <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
                   Linha do tempo
                 </p>
                 <ul className="space-y-2 text-xs">
-                  <li className="flex gap-2"><span className="text-muted">{formatDate(detalhe.cadastradoEm)}</span> Cadastro inicial</li>
-                  <li className="flex gap-2"><span className="text-muted">{formatDate(detalhe.ultimaInteracao)}</span> Última interação</li>
-                  <li className="flex gap-2"><span className="text-muted">—</span> Próxima visita agendada</li>
+                  <li className="flex gap-2"><span className="text-muted-foreground">{formatDate(detalhe.cadastradoEm)}</span> Cadastro inicial</li>
+                  <li className="flex gap-2"><span className="text-muted-foreground">{formatDate(detalhe.ultimaInteracao)}</span> Última interação</li>
+                  <li className="flex gap-2"><span className="text-muted-foreground">—</span> Próxima visita agendada</li>
                 </ul>
               </div>
             </>
@@ -322,7 +322,7 @@ function Field({
     <div className="space-y-1.5">
       <Label>{label}</Label>
       {children}
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )
 }

@@ -49,17 +49,17 @@ function Visitas() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-medium">{nomeEleitor(v.eleitorId)}</p>
-                  <p className="text-xs text-muted">Cabo: {nomeCabo(v.caboId)}</p>
+                  <p className="text-xs text-muted-foreground">Cabo: {nomeCabo(v.caboId)}</p>
                 </div>
                 <Badge variant={st.variant}><st.icon className="size-3" /> {st.label}</Badge>
               </div>
               <p className="mt-3 text-sm">{v.motivo}</p>
               {v.feedback && (
-                <p className="mt-2 rounded-lg bg-[var(--card-border)]/30 p-2 text-xs text-muted">
+                <p className="mt-2 rounded-lg bg-accent/30 p-2 text-xs text-muted-foreground">
                   “{v.feedback}”
                 </p>
               )}
-              <div className="mt-3 flex items-center justify-between border-t border-[var(--card-border)] pt-3 text-xs text-muted">
+              <div className="mt-3 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
                 <span>{formatDate(v.data)}</span>
                 <span className="font-mono">{v.protocolo}</span>
               </div>
@@ -79,7 +79,7 @@ function Visitas() {
             <DialogTitle>Feedback da visita</DialogTitle>
           </DialogHeader>
           <div className="space-y-2">
-            <p className="text-sm text-muted">Visita a {feedback && nomeEleitor(feedback.v.eleitorId)}</p>
+            <p className="text-sm text-muted-foreground">Visita a {feedback && nomeEleitor(feedback.v.eleitorId)}</p>
             <Textarea placeholder="Como foi a abordagem? O eleitor demonstrou apoio?" />
           </div>
           <DialogFooter>

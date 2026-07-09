@@ -96,10 +96,10 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-[var(--bg-elevated)] p-10 lg:flex">
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-card p-10 lg:flex">
         <div className="grid-bg absolute inset-0 opacity-40" />
         <div className="relative flex items-center gap-2.5">
-          <div className="flex size-10 items-center justify-center rounded-xl brand-gradient text-white shadow-glow">
+          <div className="flex size-10 items-center justify-center rounded-xl brand-gradient text-white shadow-elegant">
             <Building2 className="size-5" />
           </div>
           <span className="text-lg font-semibold">VotoGeral 360</span>
@@ -108,7 +108,7 @@ function AuthPage() {
           <h1 className="max-w-md text-3xl font-semibold leading-tight tracking-tight">
             Prospecção eleitoral inteligente para campanhas que vencem.
           </h1>
-          <ul className="space-y-3 text-sm text-muted">
+          <ul className="space-y-3 text-sm text-muted-foreground">
             <li className="flex items-center gap-2.5">
               <UsersCheck /> 120 mil eleitores mapeados
             </li>
@@ -120,7 +120,7 @@ function AuthPage() {
             </li>
           </ul>
         </div>
-        <p className="relative text-xs text-muted">
+        <p className="relative text-xs text-muted-foreground">
           © 2026 VotoGeral 360 — Demonstração com dados fictícios.
         </p>
       </div>
@@ -174,7 +174,7 @@ function AuthPage() {
                   <button
                     type="button"
                     onClick={() => setTab('esqueci')}
-                    className="text-xs text-brand-500 hover:underline"
+                    className="text-xs text-brand hover:underline"
                   >
                     Esqueci minha senha
                   </button>
@@ -230,11 +230,11 @@ function AuthPage() {
           ) : (
             <div className="space-y-5">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className="flex size-12 items-center justify-center rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-300">
+                <div className="flex size-12 items-center justify-center rounded-xl bg-brand/15 text-brand">
                   <ShieldCheck className="size-6" />
                 </div>
                 <h2 className="text-lg font-semibold">Verificação em duas etapas</h2>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-muted-foreground">
                   Digite o código de 6 dígitos enviado para {pendingEmail}.
                 </p>
               </div>
@@ -246,7 +246,7 @@ function AuthPage() {
                     value={d}
                     onChange={(e) => onMfaChange(i, e.target.value)}
                     inputMode="numeric"
-                    className="h-12 w-11 rounded-lg border border-[var(--card-border)] bg-[var(--bg-elevated)] text-center text-lg font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+                    className="h-12 w-11 rounded-lg border border-border bg-card text-center text-lg font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 ))}
               </div>
@@ -255,7 +255,7 @@ function AuthPage() {
               </Button>
               <button
                 onClick={() => setMfaOpen(false)}
-                className="w-full text-center text-xs text-muted hover:underline"
+                className="w-full text-center text-xs text-muted-foreground hover:underline"
               >
                 Voltar
               </button>
@@ -283,13 +283,13 @@ function Field({
       <Label>{label}</Label>
       <div className="relative">
         {icon && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
             {icon}
           </span>
         )}
         <div className={icon ? '[&_input]:pl-9' : ''}>{children}</div>
       </div>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )
 }
@@ -320,7 +320,7 @@ function RecuperarSenha({ onBack }: { onBack: () => void }) {
       <button
         type="button"
         onClick={onBack}
-        className="w-full text-center text-xs text-muted hover:underline"
+        className="w-full text-center text-xs text-muted-foreground hover:underline"
       >
         Voltar ao login
       </button>
@@ -329,5 +329,5 @@ function RecuperarSenha({ onBack }: { onBack: () => void }) {
 }
 
 function UsersCheck() {
-  return <User className="size-4 text-brand-500" />
+  return <User className="size-4 text-brand" />
 }

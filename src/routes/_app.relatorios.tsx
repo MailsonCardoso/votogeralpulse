@@ -32,13 +32,13 @@ function Relatorios() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {RELATORIOS.map((r) => (
           <Card key={r.id} className="flex flex-col p-5">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-300">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-brand/15 text-brand">
               <r.icon className="size-5" />
             </div>
             <h3 className="mt-3 font-semibold">{r.titulo}</h3>
-            <p className="mt-1 flex-1 text-sm text-muted">{r.desc}</p>
+            <p className="mt-1 flex-1 text-sm text-muted-foreground">{r.desc}</p>
             <div className="mt-4 flex items-center gap-2">
-              <span className="rounded-full bg-[var(--card-border)]/40 px-2 py-0.5 text-xs font-medium text-muted">
+              <span className="rounded-full bg-accent/40 px-2 py-0.5 text-xs font-medium text-muted-foreground">
                 {r.fmt}
               </span>
               <Button

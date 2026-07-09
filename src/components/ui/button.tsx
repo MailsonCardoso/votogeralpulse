@@ -4,20 +4,20 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '~/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
         default:
-          'brand-gradient text-white shadow-sm hover:brightness-110 glow-ring',
+          'brand-gradient text-white shadow-sm hover:brightness-110 shadow-elegant',
         secondary:
-          'bg-[var(--card)] border border-[var(--card-border)] text-[var(--fg)] hover:bg-[var(--card-border)]/40',
+          'bg-card border border-border text-foreground hover:bg-accent/40',
         outline:
-          'border border-[var(--card-border)] bg-transparent text-[var(--fg)] hover:bg-[var(--card-border)]/40',
-        ghost: 'text-[var(--fg)] hover:bg-[var(--card-border)]/40',
+          'border border-border bg-transparent text-foreground hover:bg-accent/40',
+        ghost: 'text-foreground hover:bg-accent/40',
         destructive:
-          'bg-danger text-white hover:brightness-110',
-        link: 'text-brand-500 underline-offset-4 hover:underline',
+          'bg-destructive text-white hover:brightness-110',
+        link: 'text-brand underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-9 px-4 py-2',

@@ -30,7 +30,7 @@ function Pesquisas() {
             <CardHeader className="flex-row items-start justify-between space-y-0">
               <div>
                 <CardTitle>{p.titulo}</CardTitle>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-muted-foreground">
                   {formatDate(p.data)} · {formatNumber(p.amostra)} entrevistas
                 </p>
               </div>
@@ -44,10 +44,10 @@ function Pesquisas() {
                   {p.perguntas.map((q) => (
                     <div key={q.pergunta}>
                       <div className="mb-1 flex justify-between text-xs">
-                        <span className="text-muted">{q.pergunta}</span>
+                        <span className="text-muted-foreground">{q.pergunta}</span>
                         <span className="font-medium">{q.aprovacao}%</span>
                       </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-[var(--card-border)]">
+                      <div className="h-2 overflow-hidden rounded-full bg-border">
                         <div className="h-full rounded-full brand-gradient" style={{ width: `${q.aprovacao}%` }} />
                       </div>
                     </div>
