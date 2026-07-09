@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -45,5 +46,8 @@ export const useThemeStore = create<ThemeState>()(
 
 export function useApplyTheme() {
   const theme = useThemeStore((s) => s.theme)
+  useEffect(() => {
+    applyTheme(theme)
+  }, [theme])
   return theme
 }
