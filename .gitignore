@@ -1,0 +1,20 @@
+# Logs
+node_modules
+npm-debug.log*
+.pnpm-debug.log*
+
+# Dependencies
+# (package-lock.json / composer.lock are committed for reproducible builds)
+
+# Build output
+.output
+dist
+.tanstack
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+
+# OS
+.DS_Store
+Thumbs.db
