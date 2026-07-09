@@ -8,8 +8,8 @@ npm-debug.log*
 
 # Build output
 .output
-dist
 .tanstack
+# dist/ é versionada para deploy em servidor (build de produção do front)
 
 # Editor
 .vscode/*
