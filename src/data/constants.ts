@@ -1,46 +1,57 @@
 export const CIDADE_REGIOES_BAIRROS: Record<string, Record<string, string[]>> = {
   'Paço do Lumiar': {
     'Região do Maiobão': [
-      'Maiobão', 'Tambaú', 'Paranã I', 'Paranã II', 'Paranã III', 'Paranã IV',
-      'Manaíra', 'Upaon-Açu', 'Conjunto Jaguarema', 'Residencial Carlos Augusto',
-      'Residencial Orquídea', 'Cidade Verde I', 'Cidade Verde II', 'Habitar',
+      'Maiobão', 'Tambaú', 'Residencial Tambaú', 'Paranã I', 'Paranã II', 'Paranã III',
+      'Paranã IV', 'Loteamento Paranã', 'Manaíra', 'Upaon-Açu', 'Conjunto Jaguarema',
+      'Residencial Carlos Augusto', 'Residencial Orquídea', 'Cidade Verde I',
+      'Cidade Verde II', 'Cidade Verde III', 'Cidade Verde IV', 'Habitar',
       'Residencial Abdalla I', 'Residencial Abdalla II', 'Conjunto Roseana Sarney',
-      'Parque Horizonte', 'Novo Horizonte',
+      'Parque Horizonte', 'Novo Horizonte', 'Parque do Farol',
+      'Vila Sarney Filho I', 'Vila Sarney Filho II',
     ],
     'Região da Vila Cafeteira': [
-      'Vila Cafeteira', 'Vila Nazaré', 'Vila Epitácio Cafeteira', 'Vila do Povo',
+      'Vila Cafeteira', 'Vila Epitácio Cafeteira', 'Vila Nazaré', 'Vila do Povo',
       'Nova Vida', 'Nova Esperança', 'Nova Jerusalém I', 'Nova Jerusalém II',
-      'Armindo Reis', 'Novo Paço', 'Renascer',
+      'Armindo Reis', 'Novo Paço', 'Renascer', 'Vila Kiola I', 'Vila Kiola II',
+      'Vila São Pedro',
     ],
     'Região da Vila São José': [
-      'Vila São José I', 'Vila São José II', 'Vila Nossa Senhora da Vitória',
-      'Vila Nossa Senhora da Luz', 'Vila Joaquim Aroso',
+      'Vila São José I', 'Vila São José II', 'Vila São José III',
+      'Vila Nossa Senhora da Vitória', 'Vila Nossa Senhora da Luz',
+      'Vila Joaquim Aroso', 'Nova Canaã', 'Zumbi dos Palmares',
+      'Residencial Edinho Lobão',
     ],
     'Região Bob Kennedy': [
       'Parque Bob Kennedy', 'La Belle Park', 'Jardim das Mercês', 'Mercês',
-      'Santa Clara', 'Morada Nova', 'Amaral de Matos', 'Lima Verde', 'Safira', 'Saramanta',
+      'Santa Clara', 'Morada Nova', 'Amaral de Matos', 'Lima Verde', 'Safira',
+      'Saramanta', 'Alphaville', 'Damha', 'Ville de France',
     ],
     'Região Pirâmide': [
-      'Pirâmide', 'Residencial Pirâmide', 'Parque Tiago Aroso',
-      'Recanto dos Poetas', 'Todos os Santos',
+      'Pirâmide', 'Residencial Pirâmide', 'Parque Tiago Aroso', 'Recanto dos Poetas',
+      'Todos os Santos', 'Eugênio Pereira', 'Morada do Sol', 'Vila Romualdo',
+      'Loteamento Presidente Vargas', 'Residencial Araguaia', 'Residencial Turin',
     ],
     'Região Cumbique': [
-      'Cumbique', 'Timbuba',
+      'Cumbique', 'Timbuba', 'Vila do Povo', 'Mojó', 'Vila Camões',
     ],
     'Região Iguaíba': [
-      'Iguaíba', 'Sítio Natureza', 'Sítio Grande', 'Caiaré', 'Bacuritua', 'Bom Negócio',
+      'Iguaíba', 'Sítio Natureza', 'Sítio Grande', 'Caiaré', 'Bacuritua',
+      'Bom Negócio', 'Salinas', 'Cotovelo', 'Surucutiua', 'Itapera',
+      'Ilha de Tambebeca',
     ],
     'Região Pindoba': [
-      'Pindoba',
+      'Pindoba', 'Igara', 'Mocajituba', 'Porto do Mocajituba',
     ],
     'Região Sede de Paço do Lumiar': [
-      'Centro de Paço do Lumiar', 'Vila Mercês',
+      'Centro de Paço do Lumiar', 'Vila Mercês', 'Tendal', 'Tendal Mirim',
+      'Montanha Russa', 'Vila Nova', 'Granja Cururuca', 'Vila Gaspar',
     ],
     'Região Pau Deitado': [
-      'Pau Deitado',
+      'Pau Deitado', 'Praia de Olho de Boi', 'Porto de Olho de Boi',
     ],
     'Região Pindaí': [
-      'Pindaí',
+      'Pindaí', 'Luís Fernando', 'Alto do Laranjal', 'Boa Vista', 'Vassoural',
+      'Residencial Portal do Paço',
     ],
   },
   'São Luís': {
