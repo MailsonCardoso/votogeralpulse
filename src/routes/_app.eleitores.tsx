@@ -20,7 +20,7 @@ import { DataTable, type Column } from '~/components/ui/data-table'
 import { useEleitores, APOIO_META } from '~/hooks/useData'
 import { useFilters } from '~/stores/filters'
 import { useEleitoresStore } from '~/stores/eleitores'
-import { CIDADES, regioesDaCidade, bairrosDaRegiao } from '~/data/constants'
+import { CIDADES, regioesDaCidade, bairrosDaRegiao, TIPOS_VIA } from '~/data/constants'
 import { formatDate, initials } from '~/lib/utils'
 import type { Apoio, Eleitor } from '~/data/types'
 
@@ -32,6 +32,7 @@ const schema = z.object({
   cidade: z.string().min(1),
   regiao: z.string().min(1),
   bairro: z.string().min(1),
+  tipoVia: z.string().min(1),
   zona: z.coerce.number().min(1),
   secao: z.coerce.number().min(1),
   telefone: z.string().min(8),
@@ -205,6 +206,7 @@ function Eleitores() {
               cidade: d.cidade,
               regiao: d.regiao,
               bairro: d.bairro,
+              tipoVia: d.tipoVia,
               zona: d.zona,
               secao: d.secao,
               telefone: d.telefone,
@@ -265,6 +267,10 @@ function Eleitores() {
                   <span>{detalhe.bairro}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-muted-foreground">Tipo de Via</span>
+                  <span>{detalhe.tipoVia}</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-muted-foreground">Escolaridade</span>
                   <span>{detalhe.escolaridade}</span>
                 </div>
@@ -292,6 +298,7 @@ function Eleitores() {
 }
 
 function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose: () => void }) {
+  const [aba, setAba] = useState('pessoais')
   const [cidadeSelecionada, setCidadeSelecionada] = useState(CIDADES[0])
   const [regiaoSelecionada, setRegiaoSelecionada] = useState(regioesDaCidade(CIDADES[0])[0])
   const bairrosDaRegiaoAtual = bairrosDaRegiao(cidadeSelecionada, regiaoSelecionada)
@@ -303,6 +310,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
       cidade: CIDADES[0],
       regiao: regioesDaCidade(CIDADES[0])[0],
       bairro: bairrosDaRegiao(CIDADES[0], regioesDaCidade(CIDADES[0])[0])[0] ?? '',
+      tipoVia: TIPOS_VIA[0],
       escolaridade: 'Médio',
       apoio: 'indeciso',
       zona: 1,
@@ -310,8 +318,23 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
     },
   })
 
+  const campoParaAba: Record<string, string> = {
+    nome: 'pessoais', cpf: 'pessoais', idade: 'pessoais', sexo: 'pessoais',
+    telefone: 'contato', email: 'contato',
+    cidade: 'endereco', regiao: 'endereco', bairro: 'endereco', tipoVia: 'endereco', zona: 'endereco', secao: 'endereco',
+    escolaridade: 'politica', apoio: 'politica',
+  }
+
   function submit(d: FormData) {
     onSave(d)
+  }
+
+  function aoInvalido(errors: Record<string, unknown>) {
+    const primeiro = Object.keys(errors)[0]
+    if (primeiro && campoParaAba[primeiro]) {
+      setAba(campoParaAba[primeiro])
+    }
+    toast.error('Preencha os campos obrigatórios antes de salvar.')
   }
 
   const f = (name: keyof FormData) => ({
@@ -325,8 +348,8 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
         <DialogHeader>
           <DialogTitle>Novo eleitor</DialogTitle>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
-          <Tabs defaultValue="pessoais">
+        <form onSubmit={form.handleSubmit(submit, aoInvalido)} className="space-y-4">
+          <Tabs value={aba} onValueChange={setAba}>
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="pessoais">Pessoais</TabsTrigger>
               <TabsTrigger value="contato">Contato</TabsTrigger>
@@ -334,7 +357,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
               <TabsTrigger value="politica">Política</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="pessoais" className="grid grid-cols-2 gap-3">
+            <TabsContent value="pessoais" forceMount className={aba !== 'pessoais' ? 'hidden' : 'grid grid-cols-2 gap-3'}>
               <Field label="Nome" error={f('nome').error}>
                 <Input {...form.register('nome')} placeholder="Maria Silva" />
               </Field>
@@ -352,7 +375,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
               </Field>
             </TabsContent>
 
-            <TabsContent value="contato" className="grid grid-cols-1 gap-3">
+            <TabsContent value="contato" forceMount className={aba !== 'contato' ? 'hidden' : 'grid grid-cols-1 gap-3'}>
               <Field label="Telefone" error={f('telefone').error}>
                 <Input {...form.register('telefone')} placeholder="(11) 9..." />
               </Field>
@@ -361,7 +384,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
               </Field>
             </TabsContent>
 
-            <TabsContent value="endereco" className="grid grid-cols-2 gap-3">
+            <TabsContent value="endereco" forceMount className={aba !== 'endereco' ? 'hidden' : 'grid grid-cols-2 gap-3'}>
               <Field label="Cidade" error={f('cidade').error}>
                 <Select
                   value={cidadeSelecionada}
@@ -400,6 +423,11 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
                   {bairrosDaRegiaoAtual.map((b) => <option key={b}>{b}</option>)}
                 </Select>
               </Field>
+              <Field label="Tipo de Via" error={f('tipoVia').error}>
+                <Select {...form.register('tipoVia')}>
+                  {TIPOS_VIA.map((t) => <option key={t}>{t}</option>)}
+                </Select>
+              </Field>
               <Field label="Zona" error={f('zona').error}>
                 <Input type="number" {...form.register('zona')} />
               </Field>
@@ -408,7 +436,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
               </Field>
             </TabsContent>
 
-            <TabsContent value="politica" className="grid grid-cols-2 gap-3">
+            <TabsContent value="politica" forceMount className={aba !== 'politica' ? 'hidden' : 'grid grid-cols-2 gap-3'}>
               <Field label="Escolaridade" error={f('escolaridade').error}>
                 <Select {...form.register('escolaridade')}>
                   <option value="Fundamental">Fundamental</option>

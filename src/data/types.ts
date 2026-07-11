@@ -18,6 +18,7 @@ export interface Eleitor {
   regiao: string
   bairro: string
   cidade: string
+  tipoVia: string
   zona: number
   secao: number
   telefone: string
