@@ -19,7 +19,7 @@ import {
 import { DataTable, type Column } from '~/components/ui/data-table'
 import { useEleitores, APOIO_META } from '~/hooks/useData'
 import { useFilters } from '~/stores/filters'
-import { CIDADE_BAIRROS, CIDADES } from '~/data/constants'
+import { CIDADES, regioesDaCidade, bairrosDaRegiao } from '~/data/constants'
 import { formatDate, initials } from '~/lib/utils'
 import type { Apoio, Eleitor } from '~/data/types'
 
@@ -28,8 +28,9 @@ const schema = z.object({
   cpf: z.string().min(11, 'CPF inválido'),
   idade: z.coerce.number().min(16, 'Idade mínima 16').max(120),
   sexo: z.enum(['Masculino', 'Feminino']),
-  bairro: z.string().min(1),
   cidade: z.string().min(1),
+  regiao: z.string().min(1),
+  bairro: z.string().min(1),
   zona: z.coerce.number().min(1),
   secao: z.coerce.number().min(1),
   telefone: z.string().min(8),
@@ -46,19 +47,31 @@ export const Route = createFileRoute('/_app/eleitores')({
 
 function Eleitores() {
   const filtros = useFilters()
-  const [filtroCidade, setFiltroCidade] = useState('todos')
-  const bairrosDisponiveis = filtroCidade === 'todos'
-    ? Object.values(CIDADE_BAIRROS).flat()
-    : CIDADE_BAIRROS[filtroCidade] ?? []
   const [cadastrados, setCadastrados] = useState<Eleitor[]>([])
   const eleitores = useEleitores({
     search: filtros.search,
     bairro: filtros.bairro,
     apoio: filtros.apoio,
   })
-  const lista = [...cadastrados, ...eleitores]
+  const listaBase = [...cadastrados, ...eleitores]
+  const lista = listaBase.filter((e) => {
+    if (filtros.cidade !== 'todos' && e.cidade !== filtros.cidade) return false
+    if (filtros.regiao !== 'todos' && e.regiao !== filtros.regiao) return false
+    if (filtros.bairro !== 'todos' && e.bairro !== filtros.bairro) return false
+    if (filtros.apoio !== 'todos' && e.apoio !== filtros.apoio) return false
+    if (filtros.search) {
+      const q = filtros.search.toLowerCase()
+      if (!e.nome.toLowerCase().includes(q) && !e.cpf.includes(q) && !e.email.toLowerCase().includes(q)) return false
+    }
+    return true
+  })
   const [modalOpen, setModalOpen] = useState(false)
   const [detalhe, setDetalhe] = useState<Eleitor | null>(null)
+
+  const regioesFiltro = filtros.cidade === 'todos' ? [] : regioesDaCidade(filtros.cidade)
+  const bairrosFiltro = filtros.cidade === 'todos' || filtros.regiao === 'todos'
+    ? []
+    : bairrosDaRegiao(filtros.cidade, filtros.regiao)
 
   const columns: Column<Eleitor>[] = [
     {
@@ -76,6 +89,7 @@ function Eleitores() {
         </div>
       ),
     },
+    { key: 'regiao', header: 'Região', sortable: true, sortValue: (e) => e.regiao },
     { key: 'bairro', header: 'Bairro', sortable: true, sortValue: (e) => e.bairro },
     { key: 'idade', header: 'Idade', sortable: true, sortValue: (e) => e.idade },
     { key: 'zona', header: 'Zona/Sec', render: (e) => `${e.zona}/${e.secao}` },
@@ -123,7 +137,7 @@ function Eleitores() {
         </div>
         <div className="w-44">
           <Label className="mb-1 block text-xs">Cidade</Label>
-          <Select value={filtroCidade} onChange={(e) => { setFiltroCidade(e.target.value); filtros.setBairro('todos') }}>
+          <Select value={filtros.cidade} onChange={(e) => filtros.setCidade(e.target.value)}>
             <option value="todos">Todas</option>
             {CIDADES.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -131,10 +145,19 @@ function Eleitores() {
           </Select>
         </div>
         <div className="w-44">
+          <Label className="mb-1 block text-xs">Região</Label>
+          <Select value={filtros.regiao} onChange={(e) => filtros.setRegiao(e.target.value)}>
+            <option value="todos">Todas</option>
+            {regioesFiltro.map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </Select>
+        </div>
+        <div className="w-44">
           <Label className="mb-1 block text-xs">Bairro</Label>
           <Select value={filtros.bairro} onChange={(e) => filtros.setBairro(e.target.value)}>
             <option value="todos">Todos</option>
-            {bairrosDisponiveis.map((b) => (
+            {bairrosFiltro.map((b) => (
               <option key={b} value={b}>{b}</option>
             ))}
           </Select>
@@ -177,8 +200,9 @@ function Eleitores() {
               cpf: d.cpf,
               idade: d.idade,
               sexo: d.sexo,
-              bairro: d.bairro,
               cidade: d.cidade,
+              regiao: d.regiao,
+              bairro: d.bairro,
               zona: d.zona,
               secao: d.secao,
               telefone: d.telefone,
@@ -208,7 +232,7 @@ function Eleitores() {
                   {detalhe.nome}
                 </DialogTitle>
                 <p className="text-sm text-muted-foreground">
-                  {detalhe.bairro} · Zona {detalhe.zona} / Seção {detalhe.secao}
+                  {detalhe.regiao} · {detalhe.bairro} · Zona {detalhe.zona} / Seção {detalhe.secao}
                 </p>
               </DialogHeader>
               <div className="space-y-3 text-sm">
@@ -225,6 +249,18 @@ function Eleitores() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">E-mail</span>
                   <span className="truncate">{detalhe.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Cidade</span>
+                  <span>{detalhe.cidade}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Região</span>
+                  <span>{detalhe.regiao}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Bairro</span>
+                  <span>{detalhe.bairro}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Escolaridade</span>
@@ -255,14 +291,16 @@ function Eleitores() {
 
 function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose: () => void }) {
   const [cidadeSelecionada, setCidadeSelecionada] = useState(CIDADES[0])
-  const bairrosDaCidade = CIDADE_BAIRROS[cidadeSelecionada] ?? []
+  const [regiaoSelecionada, setRegiaoSelecionada] = useState(regioesDaCidade(CIDADES[0])[0])
+  const bairrosDaRegiaoAtual = bairrosDaRegiao(cidadeSelecionada, regiaoSelecionada)
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       sexo: 'Feminino',
-      bairro: bairrosDaCidade[0] ?? '',
       cidade: CIDADES[0],
+      regiao: regioesDaCidade(CIDADES[0])[0],
+      bairro: bairrosDaRegiao(CIDADES[0], regioesDaCidade(CIDADES[0])[0])[0] ?? '',
       escolaridade: 'Médio',
       apoio: 'indeciso',
       zona: 1,
@@ -327,12 +365,29 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
                   value={cidadeSelecionada}
                   onChange={(e) => {
                     const novaCidade = e.target.value
+                    const novasRegioes = regioesDaCidade(novaCidade)
+                    const novaRegiao = novasRegioes[0]
                     setCidadeSelecionada(novaCidade)
+                    setRegiaoSelecionada(novaRegiao)
                     form.setValue('cidade', novaCidade, { shouldValidate: true })
-                    form.setValue('bairro', CIDADE_BAIRROS[novaCidade]?.[0] ?? '', { shouldValidate: true })
+                    form.setValue('regiao', novaRegiao, { shouldValidate: true })
+                    form.setValue('bairro', bairrosDaRegiao(novaCidade, novaRegiao)[0] ?? '', { shouldValidate: true })
                   }}
                 >
                   {CIDADES.map((c) => <option key={c}>{c}</option>)}
+                </Select>
+              </Field>
+              <Field label="Região" error={f('regiao').error}>
+                <Select
+                  value={regiaoSelecionada}
+                  onChange={(e) => {
+                    const novaRegiao = e.target.value
+                    setRegiaoSelecionada(novaRegiao)
+                    form.setValue('regiao', novaRegiao, { shouldValidate: true })
+                    form.setValue('bairro', bairrosDaRegiao(cidadeSelecionada, novaRegiao)[0] ?? '', { shouldValidate: true })
+                  }}
+                >
+                  {regioesDaCidade(cidadeSelecionada).map((r) => <option key={r}>{r}</option>)}
                 </Select>
               </Field>
               <Field label="Bairro" error={f('bairro').error}>
@@ -340,7 +395,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
                   value={form.watch('bairro')}
                   onChange={(e) => form.setValue('bairro', e.target.value, { shouldValidate: true })}
                 >
-                  {bairrosDaCidade.map((b) => <option key={b}>{b}</option>)}
+                  {bairrosDaRegiaoAtual.map((b) => <option key={b}>{b}</option>)}
                 </Select>
               </Field>
               <Field label="Zona" error={f('zona').error}>

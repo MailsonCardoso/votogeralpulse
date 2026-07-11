@@ -15,6 +15,7 @@ export interface Eleitor {
   cpf: string
   idade: number
   sexo: Sexo
+  regiao: string
   bairro: string
   cidade: string
   zona: number
