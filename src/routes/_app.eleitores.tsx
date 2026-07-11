@@ -14,8 +14,8 @@ import { Card } from '~/components/ui/card'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '~/components/ui/tabs'
 import { AvatarInitials } from '~/components/ui/avatar'
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from '~/components/ui/dialog'
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter,
+} from '~/components/ui/sheet'
 import { DataTable, type Column } from '~/components/ui/data-table'
 import { useEleitores, APOIO_META } from '~/hooks/useData'
 import { useFilters } from '~/stores/filters'
@@ -230,20 +230,20 @@ function Eleitores() {
         />
       )}
 
-      <Dialog open={!!detalhe} onOpenChange={(o) => !o && setDetalhe(null)}>
-        <DialogContent className="max-w-md">
+      <Sheet open={!!detalhe} onOpenChange={(o) => !o && setDetalhe(null)}>
+        <SheetContent className="max-w-md">
           {detalhe && (
             <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-2">
                   <AvatarInitials name={detalhe.nome} className="size-8" />
                   {detalhe.nome}
-                </DialogTitle>
+                </SheetTitle>
                 <p className="text-sm text-muted-foreground">
                   {detalhe.regiao} · {detalhe.bairro} · Zona {detalhe.zona} / Seção {detalhe.secao}
                 </p>
-              </DialogHeader>
-              <div className="space-y-3 text-sm">
+              </SheetHeader>
+              <div className="flex-1 space-y-3 overflow-y-auto px-6 py-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Apoio</span>
                   <Badge variant={APOIO_META[detalhe.apoio].variant}>
@@ -290,21 +290,21 @@ function Eleitores() {
                   <span className="text-muted-foreground">Cadastrado em</span>
                   <span>{formatDate(detalhe.cadastradoEm)}</span>
                 </div>
-              </div>
-              <div className="rounded-lg border border-border p-3">
-                <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-                  Linha do tempo
-                </p>
-                <ul className="space-y-2 text-xs">
-                  <li className="flex gap-2"><span className="text-muted-foreground">{formatDate(detalhe.cadastradoEm)}</span> Cadastro inicial</li>
-                  <li className="flex gap-2"><span className="text-muted-foreground">{formatDate(detalhe.ultimaInteracao)}</span> Última interação</li>
-                  <li className="flex gap-2"><span className="text-muted-foreground">—</span> Próxima visita agendada</li>
-                </ul>
+                <div className="rounded-lg border border-border p-3">
+                  <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
+                    Linha do tempo
+                  </p>
+                  <ul className="space-y-2 text-xs">
+                    <li className="flex gap-2"><span className="text-muted-foreground">{formatDate(detalhe.cadastradoEm)}</span> Cadastro inicial</li>
+                    <li className="flex gap-2"><span className="text-muted-foreground">{formatDate(detalhe.ultimaInteracao)}</span> Última interação</li>
+                    <li className="flex gap-2"><span className="text-muted-foreground">—</span> Próxima visita agendada</li>
+                  </ul>
+                </div>
               </div>
             </>
           )}
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }
@@ -357,13 +357,14 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
   })
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-xl">
-        <DialogHeader>
-          <DialogTitle>Novo eleitor</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(submit, aoInvalido)} className="space-y-4">
-          <Tabs value={aba} onValueChange={setAba}>
+    <Sheet open onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="max-w-xl p-0">
+        <form onSubmit={form.handleSubmit(submit, aoInvalido)} className="flex h-full flex-col">
+          <SheetHeader>
+            <SheetTitle>Novo eleitor</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4">
+            <Tabs value={aba} onValueChange={setAba}>
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="pessoais">Pessoais</TabsTrigger>
               <TabsTrigger value="contato">Contato</TabsTrigger>
@@ -475,18 +476,19 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
               </Field>
             </TabsContent>
           </Tabs>
+          </div>
 
-          <DialogFooter>
+          <SheetFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               <X /> Cancelar
             </Button>
             <Button type="submit">
               <Plus /> Salvar eleitor
             </Button>
-          </DialogFooter>
+          </SheetFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 }
 
