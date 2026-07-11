@@ -19,6 +19,7 @@ import {
 import { DataTable, type Column } from '~/components/ui/data-table'
 import { useEleitores, APOIO_META } from '~/hooks/useData'
 import { useFilters } from '~/stores/filters'
+import { useEleitoresStore } from '~/stores/eleitores'
 import { CIDADES, regioesDaCidade, bairrosDaRegiao } from '~/data/constants'
 import { formatDate, initials } from '~/lib/utils'
 import type { Apoio, Eleitor } from '~/data/types'
@@ -47,7 +48,8 @@ export const Route = createFileRoute('/_app/eleitores')({
 
 function Eleitores() {
   const filtros = useFilters()
-  const [cadastrados, setCadastrados] = useState<Eleitor[]>([])
+  const cadastrados = useEleitoresStore((s) => s.cadastrados)
+  const adicionarEleitor = useEleitoresStore((s) => s.adicionar)
   const eleitores = useEleitores({
     search: filtros.search,
     bairro: filtros.bairro,
@@ -214,7 +216,7 @@ function Eleitores() {
               cadastradoEm: new Date().toISOString(),
               ultimaInteracao: new Date().toISOString(),
             }
-            setCadastrados((prev) => [novo, ...prev])
+            adicionarEleitor(novo)
             toast.success('Eleitor cadastrado!', { description: d.nome })
             setModalOpen(false)
           }}
