@@ -293,26 +293,25 @@ function EleitorModal({ onClose }: { onClose: () => void }) {
             </TabsContent>
 
             <TabsContent value="endereco" className="grid grid-cols-2 gap-3">
-              <Field label="Bairro" error={f('bairro').error}>
-                <Select
-                  {...form.register('bairro')}
-                  value={form.watch('bairro')}
-                  onChange={(e) => form.setValue('bairro', e.target.value)}
-                >
-                  {bairrosDaCidade.map((b) => <option key={b}>{b}</option>)}
-                </Select>
-              </Field>
               <Field label="Cidade" error={f('cidade').error}>
                 <Select
                   value={cidadeSelecionada}
                   onChange={(e) => {
                     const novaCidade = e.target.value
                     setCidadeSelecionada(novaCidade)
-                    form.setValue('cidade', novaCidade)
-                    form.setValue('bairro', CIDADE_BAIRROS[novaCidade]?.[0] ?? '')
+                    form.setValue('cidade', novaCidade, { shouldValidate: true })
+                    form.setValue('bairro', CIDADE_BAIRROS[novaCidade]?.[0] ?? '', { shouldValidate: true })
                   }}
                 >
                   {CIDADES.map((c) => <option key={c}>{c}</option>)}
+                </Select>
+              </Field>
+              <Field label="Bairro" error={f('bairro').error}>
+                <Select
+                  value={form.watch('bairro')}
+                  onChange={(e) => form.setValue('bairro', e.target.value, { shouldValidate: true })}
+                >
+                  {bairrosDaCidade.map((b) => <option key={b}>{b}</option>)}
                 </Select>
               </Field>
               <Field label="Zona" error={f('zona').error}>
