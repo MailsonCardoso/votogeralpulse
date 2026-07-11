@@ -33,6 +33,8 @@ const schema = z.object({
   regiao: z.string().min(1),
   bairro: z.string().min(1),
   tipoVia: z.string().min(1),
+  numero: z.string().min(1, 'Informe o número'),
+  endereco: z.string().min(2, 'Informe o endereço'),
   zona: z.coerce.number().min(1),
   secao: z.coerce.number().min(1),
   telefone: z.string().min(8),
@@ -207,6 +209,8 @@ function Eleitores() {
               regiao: d.regiao,
               bairro: d.bairro,
               tipoVia: d.tipoVia,
+              numero: d.numero,
+              endereco: d.endereco,
               zona: d.zona,
               secao: d.secao,
               telefone: d.telefone,
@@ -271,6 +275,14 @@ function Eleitores() {
                   <span>{detalhe.tipoVia}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-muted-foreground">Número</span>
+                  <span>{detalhe.numero}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Endereço</span>
+                  <span className="truncate">{detalhe.endereco}</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-muted-foreground">Escolaridade</span>
                   <span>{detalhe.escolaridade}</span>
                 </div>
@@ -311,6 +323,8 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
       regiao: regioesDaCidade(CIDADES[0])[0],
       bairro: bairrosDaRegiao(CIDADES[0], regioesDaCidade(CIDADES[0])[0])[0] ?? '',
       tipoVia: TIPOS_VIA[0],
+      numero: '',
+      endereco: '',
       escolaridade: 'Médio',
       apoio: 'indeciso',
       zona: 1,
@@ -321,7 +335,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
   const campoParaAba: Record<string, string> = {
     nome: 'pessoais', cpf: 'pessoais', idade: 'pessoais', sexo: 'pessoais',
     telefone: 'contato', email: 'contato',
-    cidade: 'endereco', regiao: 'endereco', bairro: 'endereco', tipoVia: 'endereco', zona: 'endereco', secao: 'endereco',
+    cidade: 'endereco', regiao: 'endereco', bairro: 'endereco', tipoVia: 'endereco', numero: 'endereco', endereco: 'endereco', zona: 'endereco', secao: 'endereco',
     escolaridade: 'politica', apoio: 'politica',
   }
 
@@ -428,6 +442,12 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
                   {TIPOS_VIA.map((t) => <option key={t}>{t}</option>)}
                 </Select>
               </Field>
+              <Field label="Número" error={f('numero').error}>
+                <Input {...form.register('numero')} placeholder="123" />
+              </Field>
+              <Field label="Endereço" error={f('endereco').error} className="col-span-2">
+                <Input {...form.register('endereco')} placeholder="Nome da via/logradouro" />
+              </Field>
               <Field label="Zona" error={f('zona').error}>
                 <Input type="number" {...form.register('zona')} />
               </Field>
@@ -471,10 +491,10 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
 }
 
 function Field({
-  label, error, children,
-}: { label: string; error?: string; children: React.ReactNode }) {
+  label, error, children, className,
+}: { label: string; error?: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className="space-y-1.5">
+    <div className={`space-y-1.5 ${className ?? ''}`}>
       <Label>{label}</Label>
       {children}
       {error && <p className="text-xs text-destructive">{error}</p>}

@@ -19,6 +19,8 @@ export interface Eleitor {
   bairro: string
   cidade: string
   tipoVia: string
+  numero: string
+  endereco: string
   zona: number
   secao: number
   telefone: string

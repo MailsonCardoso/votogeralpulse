@@ -87,7 +87,7 @@ export const CIDADE_REGIOES_BAIRROS: Record<string, Record<string, string[]>> = 
 
 export const CIDADES = Object.keys(CIDADE_REGIOES_BAIRROS)
 
-export const TIPOS_VIA = ['Avenida', 'Rua']
+export const TIPOS_VIA = ['Avenida', 'Rua', 'Estrada']
 
 export function regioesDaCidade(cidade: string): string[] {
   return Object.keys(CIDADE_REGIOES_BAIRROS[cidade] ?? {})

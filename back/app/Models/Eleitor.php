@@ -14,7 +14,7 @@ class Eleitor extends Model
     protected $table = 'eleitores';
 
     protected $fillable = [
-        'nome', 'cpf', 'idade', 'sexo', 'bairro', 'cidade', 'regiao', 'tipo_via', 'zona', 'secao',
+        'nome', 'cpf', 'idade', 'sexo', 'bairro', 'cidade', 'regiao', 'tipo_via', 'numero', 'endereco', 'zona', 'secao',
         'telefone', 'email', 'escolaridade', 'apoio', 'lideranca_id', 'cabo_id',
         'cadastrado_em', 'ultima_interacao',
     ];
