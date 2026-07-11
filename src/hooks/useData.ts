@@ -8,29 +8,12 @@ import type { Apoio, Eleitor } from '~/data/types'
  * ex.: useQuery({ queryKey: ['eleitores'], queryFn: () => api.get(...) }).
  */
 
-export function useEleitores(filtros?: {
+export function useEleitores(_filtros?: {
   search?: string
   bairro?: string
   apoio?: Apoio | 'todos'
 }) {
-  return useMemo(() => {
-    let list: Eleitor[] = mock.ELEITORES
-    if (filtros?.search) {
-      const q = filtros.search.toLowerCase()
-      list = list.filter((e) =>
-        e.nome.toLowerCase().includes(q) ||
-        e.cpf.includes(q) ||
-        e.email.toLowerCase().includes(q),
-      )
-    }
-    if (filtros?.bairro && filtros.bairro !== 'todos') {
-      list = list.filter((e) => e.bairro === filtros.bairro)
-    }
-    if (filtros?.apoio && filtros.apoio !== 'todos') {
-      list = list.filter((e) => e.apoio === filtros.apoio)
-    }
-    return list
-  }, [filtros?.search, filtros?.bairro, filtros?.apoio])
+  return [] as Eleitor[]
 }
 
 export function useLiderancas() {

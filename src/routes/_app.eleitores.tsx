@@ -5,7 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Filter, Search, X } from 'lucide-react'
+import { Plus, Filter, Search, X, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { PageHeader } from '~/components/ui/page-header'
 import { Button } from '~/components/ui/button'
@@ -19,7 +19,7 @@ import {
 import { DataTable, type Column } from '~/components/ui/data-table'
 import { useEleitores, APOIO_META } from '~/hooks/useData'
 import { useFilters } from '~/stores/filters'
-import { BAIRROS, ZONAS } from '~/data/constants'
+import { CIDADE_BAIRROS, CIDADES } from '~/data/constants'
 import { formatDate, initials } from '~/lib/utils'
 import type { Apoio, Eleitor } from '~/data/types'
 
@@ -46,6 +46,10 @@ export const Route = createFileRoute('/_app/eleitores')({
 
 function Eleitores() {
   const filtros = useFilters()
+  const [filtroCidade, setFiltroCidade] = useState('todos')
+  const bairrosDisponiveis = filtroCidade === 'todos'
+    ? Object.values(CIDADE_BAIRROS).flat()
+    : CIDADE_BAIRROS[filtroCidade] ?? []
   const eleitores = useEleitores({
     search: filtros.search,
     bairro: filtros.bairro,
@@ -116,10 +120,19 @@ function Eleitores() {
           />
         </div>
         <div className="w-44">
+          <Label className="mb-1 block text-xs">Cidade</Label>
+          <Select value={filtroCidade} onChange={(e) => { setFiltroCidade(e.target.value); filtros.setBairro('todos') }}>
+            <option value="todos">Todas</option>
+            {CIDADES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </Select>
+        </div>
+        <div className="w-44">
           <Label className="mb-1 block text-xs">Bairro</Label>
           <Select value={filtros.bairro} onChange={(e) => filtros.setBairro(e.target.value)}>
             <option value="todos">Todos</option>
-            {BAIRROS.map((b) => (
+            {bairrosDisponiveis.map((b) => (
               <option key={b} value={b}>{b}</option>
             ))}
           </Select>
@@ -139,7 +152,19 @@ function Eleitores() {
         </Button>
       </Card>
 
-      <DataTable columns={columns} data={eleitores} pageSize={9} />
+      {eleitores.length === 0 ? (
+        <Card className="flex flex-col items-center justify-center gap-4 py-20 text-center">
+          <Users className="size-16 text-muted-foreground/40" />
+          <div>
+            <p className="text-lg font-semibold">Nenhum eleitor cadastrado</p>
+            <p className="text-sm text-muted-foreground">
+              Clique em "Novo eleitor" para cadastrar o primeiro.
+            </p>
+          </div>
+        </Card>
+      ) : (
+        <DataTable columns={columns} data={eleitores} pageSize={9} />
+      )}
 
       {modalOpen && <EleitorModal onClose={() => setModalOpen(false)} />}
 
@@ -199,12 +224,15 @@ function Eleitores() {
 }
 
 function EleitorModal({ onClose }: { onClose: () => void }) {
+  const [cidadeSelecionada, setCidadeSelecionada] = useState(CIDADES[0])
+  const bairrosDaCidade = CIDADE_BAIRROS[cidadeSelecionada] ?? []
+
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       sexo: 'Feminino',
-      bairro: BAIRROS[0],
-      cidade: 'São Paulo',
+      bairro: bairrosDaCidade[0] ?? '',
+      cidade: CIDADES[0],
       escolaridade: 'Médio',
       apoio: 'indeciso',
       zona: 1,
@@ -266,12 +294,26 @@ function EleitorModal({ onClose }: { onClose: () => void }) {
 
             <TabsContent value="endereco" className="grid grid-cols-2 gap-3">
               <Field label="Bairro" error={f('bairro').error}>
-                <Select {...form.register('bairro')}>
-                  {BAIRROS.map((b) => <option key={b}>{b}</option>)}
+                <Select
+                  {...form.register('bairro')}
+                  value={form.watch('bairro')}
+                  onChange={(e) => form.setValue('bairro', e.target.value)}
+                >
+                  {bairrosDaCidade.map((b) => <option key={b}>{b}</option>)}
                 </Select>
               </Field>
               <Field label="Cidade" error={f('cidade').error}>
-                <Input {...form.register('cidade')} />
+                <Select
+                  value={cidadeSelecionada}
+                  onChange={(e) => {
+                    const novaCidade = e.target.value
+                    setCidadeSelecionada(novaCidade)
+                    form.setValue('cidade', novaCidade)
+                    form.setValue('bairro', CIDADE_BAIRROS[novaCidade]?.[0] ?? '')
+                  }}
+                >
+                  {CIDADES.map((c) => <option key={c}>{c}</option>)}
+                </Select>
               </Field>
               <Field label="Zona" error={f('zona').error}>
                 <Input type="number" {...form.register('zona')} />

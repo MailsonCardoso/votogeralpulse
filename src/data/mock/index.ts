@@ -117,31 +117,7 @@ export const CABOS: Cabo[] = Array.from({ length: 20 }).map((_, i) => {
   }
 })
 
-export const ELEITORES: Eleitor[] = Array.from({ length: 120 }).map((_, i) => {
-  const nome = nomeCompleto()
-  const idade = between(16, 89)
-  const cad = new Date(2025, between(0, 11), between(1, 28))
-  const ult = new Date(2026, between(0, 5), between(1, 28))
-  return {
-    id: `elt-${i + 1}`,
-    nome,
-    cpf: cpf(),
-    idade,
-    sexo: pick(SEXOS),
-    bairro: pick(BAIRROS),
-    cidade: pick(CIDADES),
-    zona: between(1, 380),
-    secao: between(1, 450),
-    telefone: telefone(),
-    email: email(nome),
-    escolaridade: pick(ESCOLARIDADES),
-    apoio: pick(APOIOS),
-    liderancaId: pick(LIDERANCAS).id,
-    caboId: pick(CABOS).id,
-    cadastradoEm: cad.toISOString(),
-    ultimaInteracao: ult.toISOString(),
-  }
-})
+export const ELEITORES: Eleitor[] = []
 
 export const EQUIPE: MembroEquipe[] = Array.from({ length: 14 }).map((_, i) => {
   const nome = nomeCompleto()
@@ -164,7 +140,7 @@ export const VISITAS: Visita[] = Array.from({ length: 30 }).map((_, i) => {
   const status = pick(['agendada', 'concluida', 'concluida', 'cancelada'] as const)
   return {
     id: `vis-${i + 1}`,
-    eleitorId: pick(ELEITORES).id,
+    eleitorId: `elt-${between(1, 120)}`,
     caboId: pick(CABOS).id,
     data: new Date(2026, between(0, 6), between(1, 28)).toISOString(),
     status,
@@ -248,7 +224,7 @@ function msg(texto: string, de: Mensagem['de'], hora: string): Mensagem {
 }
 
 export const CONVERSAS: Conversa[] = Array.from({ length: 40 }).map((_, i) => {
-  const el = pick(ELEITORES)
+  const nome = nomeCompleto()
   const n = between(3, 8)
   const mensagens: Mensagem[] = Array.from({ length: n }).map((_, j) =>
     msg(
@@ -265,10 +241,10 @@ export const CONVERSAS: Conversa[] = Array.from({ length: 40 }).map((_, i) => {
   )
   return {
     id: `conv-${i + 1}`,
-    eleitorId: el.id,
-    nome: el.nome,
-    bairro: el.bairro,
-    tags: [el.apoio, pick(['whatsapp', 'receptivo', 'prioridade'])],
+    eleitorId: `elt-${between(1, 120)}`,
+    nome,
+    bairro: pick(BAIRROS),
+    tags: [pick(APOIOS), pick(['whatsapp', 'receptivo', 'prioridade'])],
     naoLidas: rand() > 0.6 ? between(1, 4) : 0,
     online: rand() > 0.5,
     mensagens,
