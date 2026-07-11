@@ -50,11 +50,13 @@ function Eleitores() {
   const bairrosDisponiveis = filtroCidade === 'todos'
     ? Object.values(CIDADE_BAIRROS).flat()
     : CIDADE_BAIRROS[filtroCidade] ?? []
+  const [cadastrados, setCadastrados] = useState<Eleitor[]>([])
   const eleitores = useEleitores({
     search: filtros.search,
     bairro: filtros.bairro,
     apoio: filtros.apoio,
   })
+  const lista = [...cadastrados, ...eleitores]
   const [modalOpen, setModalOpen] = useState(false)
   const [detalhe, setDetalhe] = useState<Eleitor | null>(null)
 
@@ -101,7 +103,7 @@ function Eleitores() {
     <div className="space-y-6">
       <PageHeader
         title="Eleitores"
-        description={`${eleitores.length} eleitores no seu banco`}
+        description={`${lista.length} eleitores no seu banco`}
         actions={
           <Button onClick={() => setModalOpen(true)}>
             <Plus /> Novo eleitor
@@ -152,7 +154,7 @@ function Eleitores() {
         </Button>
       </Card>
 
-      {eleitores.length === 0 ? (
+      {lista.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-4 py-20 text-center">
           <Users className="size-16 text-muted-foreground/40" />
           <div>
@@ -163,10 +165,38 @@ function Eleitores() {
           </div>
         </Card>
       ) : (
-        <DataTable columns={columns} data={eleitores} pageSize={9} />
+        <DataTable columns={columns} data={lista} pageSize={9} />
       )}
 
-      {modalOpen && <EleitorModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && (
+        <EleitorModal
+          onSave={(d) => {
+            const novo: Eleitor = {
+              id: `elt-${Date.now()}`,
+              nome: d.nome,
+              cpf: d.cpf,
+              idade: d.idade,
+              sexo: d.sexo,
+              bairro: d.bairro,
+              cidade: d.cidade,
+              zona: d.zona,
+              secao: d.secao,
+              telefone: d.telefone,
+              email: d.email,
+              escolaridade: d.escolaridade,
+              apoio: d.apoio,
+              liderancaId: '',
+              caboId: '',
+              cadastradoEm: new Date().toISOString(),
+              ultimaInteracao: new Date().toISOString(),
+            }
+            setCadastrados((prev) => [novo, ...prev])
+            toast.success('Eleitor cadastrado!', { description: d.nome })
+            setModalOpen(false)
+          }}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
 
       <Dialog open={!!detalhe} onOpenChange={(o) => !o && setDetalhe(null)}>
         <DialogContent className="max-w-md">
@@ -223,7 +253,7 @@ function Eleitores() {
   )
 }
 
-function EleitorModal({ onClose }: { onClose: () => void }) {
+function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose: () => void }) {
   const [cidadeSelecionada, setCidadeSelecionada] = useState(CIDADES[0])
   const bairrosDaCidade = CIDADE_BAIRROS[cidadeSelecionada] ?? []
 
@@ -241,8 +271,7 @@ function EleitorModal({ onClose }: { onClose: () => void }) {
   })
 
   function submit(d: FormData) {
-    toast.success('Eleitor cadastrado!', { description: d.nome })
-    onClose()
+    onSave(d)
   }
 
   const f = (name: keyof FormData) => ({
