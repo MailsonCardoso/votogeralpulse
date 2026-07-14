@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import * as mock from '~/data/mock'
-import type { Apoio, Eleitor } from '~/data/types'
+import type { Apoio, Eleitor, Lideranca } from '~/data/types'
 
 /**
  * Hooks que envolvem os dados mockados. Hoje retornam os mocks diretamente,
@@ -17,7 +17,7 @@ export function useEleitores(_filtros?: {
 }
 
 export function useLiderancas() {
-  return mock.LIDERANCAS
+  return [] as Lideranca[]
 }
 export function useCabos() {
   return mock.CABOS

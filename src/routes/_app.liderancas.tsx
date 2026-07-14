@@ -54,7 +54,18 @@ function Liderancas() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtradas.map((l) => {
+        {filtradas.length === 0 ? (
+          <Card className="col-span-full flex flex-col items-center justify-center gap-4 py-20 text-center">
+            <Crown className="size-16 text-muted-foreground/40" />
+            <div>
+              <p className="text-lg font-semibold">Nenhuma liderança cadastrada</p>
+              <p className="text-sm text-muted-foreground">
+                Clique em "Nova liderança" para começar.
+              </p>
+            </div>
+          </Card>
+        ) : (
+          filtradas.map((l) => {
           const pct = Math.round((l.convertidos / l.meta) * 100)
           return (
             <Card key={l.id} className="p-5">
@@ -107,7 +118,8 @@ function Liderancas() {
               </div>
             </Card>
           )
-        })}
+        })
+      )}
       </div>
 
       <Card>

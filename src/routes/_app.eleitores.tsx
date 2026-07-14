@@ -5,7 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Filter, Search, X, Users } from 'lucide-react'
+import { Plus, Filter, Search, X, Users, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { PageHeader } from '~/components/ui/page-header'
 import { Button } from '~/components/ui/button'
@@ -52,6 +52,7 @@ function Eleitores() {
   const filtros = useFilters()
   const cadastrados = useEleitoresStore((s) => s.cadastrados)
   const adicionarEleitor = useEleitoresStore((s) => s.adicionar)
+  const atualizarEleitor = useEleitoresStore((s) => s.atualizar)
   const eleitores = useEleitores({
     search: filtros.search,
     bairro: filtros.bairro,
@@ -70,7 +71,44 @@ function Eleitores() {
     return true
   })
   const [modalOpen, setModalOpen] = useState(false)
+  const [editando, setEditando] = useState<Eleitor | null>(null)
   const [detalhe, setDetalhe] = useState<Eleitor | null>(null)
+
+  function salvarEleitor(d: FormData, id?: string) {
+    const base = id ? listaBase.find((e) => e.id === id) : undefined
+    const eleitor: Eleitor = {
+      id: id ?? `elt-${Date.now()}`,
+      nome: d.nome,
+      cpf: d.cpf,
+      idade: d.idade,
+      sexo: d.sexo,
+      cidade: d.cidade,
+      regiao: d.regiao,
+      bairro: d.bairro,
+      tipoVia: d.tipoVia,
+      numero: d.numero,
+      endereco: d.endereco,
+      zona: d.zona,
+      secao: d.secao,
+      telefone: d.telefone,
+      email: d.email,
+      escolaridade: d.escolaridade,
+      apoio: d.apoio,
+      liderancaId: base?.liderancaId ?? '',
+      caboId: base?.caboId ?? '',
+      cadastradoEm: base?.cadastradoEm ?? new Date().toISOString(),
+      ultimaInteracao: new Date().toISOString(),
+    }
+    if (id) {
+      atualizarEleitor(eleitor)
+      toast.success('Eleitor atualizado!', { description: d.nome })
+      setEditando(null)
+    } else {
+      adicionarEleitor(eleitor)
+      toast.success('Eleitor cadastrado!', { description: d.nome })
+      setModalOpen(false)
+    }
+  }
 
   const regioesFiltro = filtros.cidade === 'todos' ? [] : regioesDaCidade(filtros.cidade)
   const bairrosFiltro = filtros.cidade === 'todos' || filtros.regiao === 'todos'
@@ -110,9 +148,14 @@ function Eleitores() {
       key: 'acao',
       header: '',
       render: (e) => (
-        <Button variant="ghost" size="sm" onClick={() => setDetalhe(e)}>
-          Detalhes
-        </Button>
+        <div className="flex justify-end gap-1">
+          <Button variant="ghost" size="sm" onClick={() => setDetalhe(e)}>
+            Detalhes
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setEditando(e)}>
+            <Pencil /> Editar
+          </Button>
+        </div>
       ),
     },
   ]
@@ -197,35 +240,16 @@ function Eleitores() {
 
       {modalOpen && (
         <EleitorModal
-          onSave={(d) => {
-            const novo: Eleitor = {
-              id: `elt-${Date.now()}`,
-              nome: d.nome,
-              cpf: d.cpf,
-              idade: d.idade,
-              sexo: d.sexo,
-              cidade: d.cidade,
-              regiao: d.regiao,
-              bairro: d.bairro,
-              tipoVia: d.tipoVia,
-              numero: d.numero,
-              endereco: d.endereco,
-              zona: d.zona,
-              secao: d.secao,
-              telefone: d.telefone,
-              email: d.email,
-              escolaridade: d.escolaridade,
-              apoio: d.apoio,
-              liderancaId: '',
-              caboId: '',
-              cadastradoEm: new Date().toISOString(),
-              ultimaInteracao: new Date().toISOString(),
-            }
-            adicionarEleitor(novo)
-            toast.success('Eleitor cadastrado!', { description: d.nome })
-            setModalOpen(false)
-          }}
+          onSave={(d, id) => salvarEleitor(d, id)}
           onClose={() => setModalOpen(false)}
+        />
+      )}
+
+      {editando && (
+        <EleitorModal
+          initial={editando}
+          onSave={(d, id) => salvarEleitor(d, id)}
+          onClose={() => setEditando(null)}
         />
       )}
 
@@ -308,30 +332,56 @@ function Eleitores() {
   )
 }
 
-function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose: () => void }) {
-  const [cidadeSelecionada, setCidadeSelecionada] = useState(CIDADES[0])
-  const [regiaoSelecionada, setRegiaoSelecionada] = useState(regioesDaCidade(CIDADES[0])[0])
+function EleitorModal({ initial, onSave, onClose }: {
+  initial?: Eleitor
+  onSave: (d: FormData, id?: string) => void
+  onClose: () => void
+}) {
+  const [cidadeSelecionada, setCidadeSelecionada] = useState(initial?.cidade ?? CIDADES[0])
+  const [regiaoSelecionada, setRegiaoSelecionada] = useState(initial?.regiao ?? regioesDaCidade(CIDADES[0])[0])
   const bairrosDaRegiaoAtual = bairrosDaRegiao(cidadeSelecionada, regiaoSelecionada)
+
+  const padroes = {
+    sexo: 'Feminino' as const,
+    cidade: CIDADES[0],
+    regiao: regioesDaCidade(CIDADES[0])[0],
+    bairro: bairrosDaRegiao(CIDADES[0], regioesDaCidade(CIDADES[0])[0])[0] ?? '',
+    tipoVia: TIPOS_VIA[0],
+    numero: '',
+    endereco: '',
+    escolaridade: 'Médio' as const,
+    apoio: 'indeciso' as const,
+    zona: 1,
+    secao: 1,
+  }
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      sexo: 'Feminino',
-      cidade: CIDADES[0],
-      regiao: regioesDaCidade(CIDADES[0])[0],
-      bairro: bairrosDaRegiao(CIDADES[0], regioesDaCidade(CIDADES[0])[0])[0] ?? '',
-      tipoVia: TIPOS_VIA[0],
-      numero: '',
-      endereco: '',
-      escolaridade: 'Médio',
-      apoio: 'indeciso',
-      zona: 1,
-      secao: 1,
-    },
+    defaultValues: initial
+      ? {
+          ...padroes,
+          nome: initial.nome,
+          cpf: initial.cpf,
+          idade: initial.idade,
+          sexo: initial.sexo,
+          cidade: initial.cidade,
+          regiao: initial.regiao,
+          bairro: initial.bairro,
+          tipoVia: initial.tipoVia,
+          numero: initial.numero,
+          endereco: initial.endereco,
+          zona: initial.zona,
+          secao: initial.secao,
+          telefone: initial.telefone,
+          email: initial.email,
+          escolaridade: initial.escolaridade,
+          apoio: initial.apoio,
+        }
+      : padroes,
   })
 
   function submit(d: FormData) {
-    onSave(d)
+    onSave(d, initial?.id)
   }
 
   function aoInvalido() {
@@ -348,7 +398,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
       <SheetContent className="max-w-xl p-0">
         <form onSubmit={form.handleSubmit(submit, aoInvalido)} className="flex h-full flex-col">
           <SheetHeader>
-            <SheetTitle>Novo eleitor</SheetTitle>
+            <SheetTitle>{initial ? 'Editar eleitor' : 'Novo eleitor'}</SheetTitle>
           </SheetHeader>
           <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
             <section className="space-y-3">
@@ -361,7 +411,7 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
                   <Input {...form.register('cpf')} placeholder="000.000.000-00" />
                 </Field>
                 <Field label="Idade" error={f('idade').error}>
-                  <Input type="number" {...form.register('idade')} />
+                  <Input type="number" className="no-spinner" {...form.register('idade')} />
                 </Field>
                 <Field label="Sexo" error={f('sexo').error}>
                   <Select {...form.register('sexo')}>
@@ -436,12 +486,12 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
                 <Field label="Endereço" error={f('endereco').error} className="col-span-2">
                   <Input {...form.register('endereco')} placeholder="Nome da via/logradouro" />
                 </Field>
-                <Field label="Zona" error={f('zona').error}>
-                  <Input type="number" {...form.register('zona')} />
-                </Field>
-                <Field label="Seção" error={f('secao').error}>
-                  <Input type="number" {...form.register('secao')} />
-                </Field>
+              <Field label="Zona" error={f('zona').error}>
+                <Input type="number" className="no-spinner" {...form.register('zona')} />
+              </Field>
+              <Field label="Seção" error={f('secao').error}>
+                <Input type="number" className="no-spinner" {...form.register('secao')} />
+              </Field>
               </div>
             </section>
 
