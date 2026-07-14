@@ -136,7 +136,7 @@ function Liderancas() {
               eleitores: d.eleitores,
               convertidos: 0,
               meta: d.meta,
-              engajamento: d.engajamento,
+              engajamento: Math.min(100, Math.round((0 / Math.max(d.eleitores, 1)) * 100)),
               ativo: d.ativo === 'true',
             }
             adicionarLideranca(nova)
@@ -156,7 +156,6 @@ const schema = z.object({
   telefone: z.string().min(8, 'Telefone inválido'),
   eleitores: z.coerce.number().min(1, 'Mínimo 1').max(9999),
   meta: z.coerce.number().min(1, 'Mínimo 1').max(9999),
-  engajamento: z.coerce.number().min(0).max(100),
   ativo: z.string().refine((v) => v === 'true' || v === 'false', 'Selecione o status'),
 })
 
@@ -171,7 +170,6 @@ function LiderancaModal({ onSave, onClose }: { onSave: (d: FormData) => void; on
       telefone: '',
       eleitores: 50,
       meta: 80,
-      engajamento: 70,
       ativo: 'true',
     },
   })
@@ -223,8 +221,10 @@ function LiderancaModal({ onSave, onClose }: { onSave: (d: FormData) => void; on
                 <Field label="Meta de conversão" error={f('meta').error}>
                   <Input type="number" {...form.register('meta')} />
                 </Field>
-                <Field label="Engajamento (%)" error={f('engajamento').error}>
-                  <Input type="number" {...form.register('engajamento')} />
+                <Field label="Engajamento" className="col-span-2">
+                  <p className="text-sm text-muted-foreground">
+                    Calculado automaticamente: {Math.min(100, Math.round(0 / Math.max(Number(form.watch('eleitores')), 1) * 100))}% da base convertida (convertidos / eleitores).
+                  </p>
                 </Field>
                 <Field label="Status" error={f('ativo').error}>
                   <Select {...form.register('ativo')}>
