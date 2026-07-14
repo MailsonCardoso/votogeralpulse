@@ -1,13 +1,20 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Crown, TrendingUp, Users } from 'lucide-react'
+import { Crown, Users, Plus, X } from 'lucide-react'
 import { PageHeader } from '~/components/ui/page-header'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { Badge, Input, Select } from '~/components/ui/input'
+import { Badge, Input, Select, Label } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '~/components/ui/sheet'
 import { DataTable, type Column } from '~/components/ui/data-table'
 import { useLiderancas } from '~/hooks/useData'
 import { formatNumber } from '~/lib/utils'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { toast } from 'sonner'
+import { BAIRROS } from '~/data/constants'
+import { useLiderancasStore } from '~/stores/liderancas'
 import type { Lideranca } from '~/data/types'
 
 export const Route = createFileRoute('/_app/liderancas')({
@@ -17,9 +24,14 @@ export const Route = createFileRoute('/_app/liderancas')({
 
 function Liderancas() {
   const liderancas = useLiderancas()
+  const cadastradas = useLiderancasStore((s) => s.cadastradas)
+  const adicionarLideranca = useLiderancasStore((s) => s.adicionar)
   const [q, setQ] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
 
-  const filtradas = liderancas.filter((l) =>
+  const listaBase = [...cadastradas, ...liderancas]
+
+  const filtradas = listaBase.filter((l) =>
     l.nome.toLowerCase().includes(q.toLowerCase()) ||
     l.bairro.toLowerCase().includes(q.toLowerCase()),
   )
@@ -29,7 +41,7 @@ function Liderancas() {
       <PageHeader
         title="Lideranças"
         description="Acompanhe a performance dos líderes comunitários."
-        actions={<Button><Crown /> Nova liderança</Button>}
+        actions={<Button onClick={() => setModalOpen(true)}><Crown /> Nova liderança</Button>}
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -44,6 +56,7 @@ function Liderancas() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{l.nome}</p>
                   <p className="text-xs text-muted-foreground">{l.bairro}</p>
+                  <p className="text-xs text-muted-foreground">{l.telefone}</p>
                 </div>
                 <Badge variant={l.ativo ? 'success' : 'outline'}>
                   {l.ativo ? 'Ativo' : 'Inativo'}
@@ -111,6 +124,140 @@ function Liderancas() {
           />
         </CardContent>
       </Card>
+
+      {modalOpen && (
+        <LiderancaModal
+          onSave={(d) => {
+            const nova: Lideranca = {
+              id: `lid-${Date.now()}`,
+              nome: d.nome,
+              bairro: d.bairro,
+              telefone: d.telefone,
+              eleitores: d.eleitores,
+              convertidos: 0,
+              meta: d.meta,
+              engajamento: d.engajamento,
+              ativo: d.ativo === 'true',
+            }
+            adicionarLideranca(nova)
+            toast.success('Liderança cadastrada!', { description: d.nome })
+            setModalOpen(false)
+          }}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+const schema = z.object({
+  nome: z.string().min(2, 'Informe o nome'),
+  bairro: z.string().min(1, 'Selecione o bairro'),
+  telefone: z.string().min(8, 'Telefone inválido'),
+  eleitores: z.coerce.number().min(1, 'Mínimo 1').max(9999),
+  meta: z.coerce.number().min(1, 'Mínimo 1').max(9999),
+  engajamento: z.coerce.number().min(0).max(100),
+  ativo: z.string().refine((v) => v === 'true' || v === 'false', 'Selecione o status'),
+})
+
+type FormData = z.infer<typeof schema>
+
+function LiderancaModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose: () => void }) {
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      nome: '',
+      bairro: BAIRROS[0],
+      telefone: '',
+      eleitores: 50,
+      meta: 80,
+      engajamento: 70,
+      ativo: 'true',
+    },
+  })
+
+  function submit(d: FormData) {
+    onSave(d)
+  }
+
+  function aoInvalido() {
+    toast.error('Preencha os campos obrigatórios antes de salvar.')
+  }
+
+  const f = (name: keyof FormData) => ({
+    ...form.register(name),
+    error: form.formState.errors[name]?.message as string | undefined,
+  })
+
+  return (
+    <Sheet open onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="max-w-xl p-0">
+        <form onSubmit={form.handleSubmit(submit, aoInvalido)} className="flex h-full flex-col">
+          <SheetHeader>
+            <SheetTitle>Nova liderança</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Identificação</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Nome" error={f('nome').error} className="col-span-2">
+                  <Input {...form.register('nome')} placeholder="Maria Silva" />
+                </Field>
+                <Field label="Bairro" error={f('bairro').error}>
+                  <Select {...form.register('bairro')}>
+                    {BAIRROS.map((b) => <option key={b}>{b}</option>)}
+                  </Select>
+                </Field>
+                <Field label="Telefone" error={f('telefone').error}>
+                  <Input {...form.register('telefone')} placeholder="(11) 9..." />
+                </Field>
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Metas e performance</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Eleitores" error={f('eleitores').error}>
+                  <Input type="number" {...form.register('eleitores')} />
+                </Field>
+                <Field label="Meta de conversão" error={f('meta').error}>
+                  <Input type="number" {...form.register('meta')} />
+                </Field>
+                <Field label="Engajamento (%)" error={f('engajamento').error}>
+                  <Input type="number" {...form.register('engajamento')} />
+                </Field>
+                <Field label="Status" error={f('ativo').error}>
+                  <Select {...form.register('ativo')}>
+                    <option value="true">Ativo</option>
+                    <option value="false">Inativo</option>
+                  </Select>
+                </Field>
+              </div>
+            </section>
+          </div>
+
+          <SheetFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
+              <X /> Cancelar
+            </Button>
+            <Button type="submit">
+              <Plus /> Salvar liderança
+            </Button>
+          </SheetFooter>
+        </form>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+function Field({
+  label, error, children, className,
+}: { label: string; error?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`space-y-1.5 ${className ?? ''}`}>
+      <Label>{label}</Label>
+      {children}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )
 }
