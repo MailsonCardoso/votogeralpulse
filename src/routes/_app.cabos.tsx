@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Network, Plus, X } from 'lucide-react'
+import { Network, Plus, X, Pencil } from 'lucide-react'
 import { PageHeader } from '~/components/ui/page-header'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Badge, Input, Select, Label } from '~/components/ui/input'
@@ -25,7 +25,9 @@ export const Route = createFileRoute('/_app/cabos')({
 function Cabos() {
   const cadastrados = useCabosStore((s) => s.cadastrados)
   const adicionarCabo = useCabosStore((s) => s.adicionar)
+  const patchCabo = useCabosStore((s) => s.patch)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editando, setEditando] = useState<Cabo | null>(null)
 
   const listaBase = cadastrados
 
@@ -54,14 +56,17 @@ function Cabos() {
             const nomeLideranca = LIDERANCAS.find((l) => l.id === c.liderancaId)?.nome
             return (
               <Card key={c.id} className="p-5">
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-3">
                   <div className="flex size-10 items-center justify-center rounded-xl bg-brand/15 text-brand">
                     <Network className="size-5" />
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">{c.nome}</p>
                     <p className="text-xs text-muted-foreground">{c.regiao}</p>
                   </div>
+                  <Button variant="ghost" size="icon" onClick={() => setEditando(c)} aria-label="Editar cabo">
+                    <Pencil />
+                  </Button>
                 </div>
                 {nomeLideranca && (
                   <p className="mt-2 text-xs text-muted-foreground">
@@ -138,30 +143,49 @@ function Cabos() {
                 { key: 'performance', header: 'Performance', sortable: true, sortValue: (c: Cabo) => c.performance, render: (c) => (
                   <Badge variant={c.performance > 70 ? 'success' : 'warning'}>{c.performance}%</Badge>
                 ) },
+                { key: 'acoes', header: 'Ações', render: (c) => (
+                  <Button variant="outline" size="sm" onClick={() => setEditando(c)}>
+                    <Pencil /> Editar
+                  </Button>
+                ) },
               ] as Column<Cabo>[]
             }
           />
         </CardContent>
       </Card>
 
-      {modalOpen && (
+      {(modalOpen || editando) && (
         <CaboModal
+          initial={editando ?? undefined}
           onSave={(d) => {
-            const novo: Cabo = {
-              id: `cabo-${Date.now()}`,
-              nome: d.nome,
-              liderancaId: d.liderancaId,
-              regiao: d.regiao,
-              eleitores: d.eleitores,
-              visitas: d.visitas,
-              meta: d.meta,
-              performance: d.performance,
+            if (editando) {
+              patchCabo(editando.id, {
+                nome: d.nome,
+                liderancaId: d.liderancaId,
+                regiao: d.regiao,
+                eleitores: d.eleitores,
+                visitas: d.visitas,
+                meta: d.meta,
+                performance: d.performance,
+              })
+              toast.success('Cabo atualizado!', { description: d.nome })
+              setEditando(null)
+            } else {
+              adicionarCabo({
+                id: `cabo-${Date.now()}`,
+                nome: d.nome,
+                liderancaId: d.liderancaId,
+                regiao: d.regiao,
+                eleitores: d.eleitores,
+                visitas: d.visitas,
+                meta: d.meta,
+                performance: d.performance,
+              })
+              toast.success('Cabo cadastrado!', { description: d.nome })
+              setModalOpen(false)
             }
-            adicionarCabo(novo)
-            toast.success('Cabo cadastrado!', { description: d.nome })
-            setModalOpen(false)
           }}
-          onClose={() => setModalOpen(false)}
+          onClose={() => { setModalOpen(false); setEditando(null) }}
         />
       )}
     </div>
@@ -180,18 +204,28 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-function CaboModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose: () => void }) {
+function CaboModal({ initial, onSave, onClose }: { initial?: Cabo; onSave: (d: FormData) => void; onClose: () => void }) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      nome: '',
-      liderancaId: LIDERANCAS[0]?.id ?? '',
-      regiao: BAIRROS[0],
-      eleitores: 30,
-      visitas: 10,
-      meta: 50,
-      performance: 60,
-    },
+    defaultValues: initial
+      ? {
+          nome: initial.nome,
+          liderancaId: initial.liderancaId,
+          regiao: initial.regiao,
+          eleitores: initial.eleitores,
+          visitas: initial.visitas,
+          meta: initial.meta,
+          performance: initial.performance,
+        }
+      : {
+          nome: '',
+          liderancaId: LIDERANCAS[0]?.id ?? '',
+          regiao: BAIRROS[0],
+          eleitores: 30,
+          visitas: 10,
+          meta: 50,
+          performance: 60,
+        },
   })
 
   function submit(d: FormData) {
@@ -212,7 +246,7 @@ function CaboModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose
       <SheetContent className="max-w-xl p-0">
         <form onSubmit={form.handleSubmit(submit, aoInvalido)} className="flex h-full flex-col">
           <SheetHeader>
-            <SheetTitle>Novo cabo</SheetTitle>
+            <SheetTitle>{initial ? 'Editar cabo' : 'Novo cabo'}</SheetTitle>
           </SheetHeader>
           <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
             <section className="space-y-3">
@@ -260,7 +294,7 @@ function CaboModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose
               <X /> Cancelar
             </Button>
             <Button type="submit">
-              <Plus /> Salvar cabo
+              <Plus /> {initial ? 'Salvar alterações' : 'Salvar cabo'}
             </Button>
           </SheetFooter>
         </form>
