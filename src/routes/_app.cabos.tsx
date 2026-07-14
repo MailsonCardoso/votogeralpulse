@@ -6,7 +6,6 @@ import { Badge, Input, Select, Label } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '~/components/ui/sheet'
 import { DataTable, type Column } from '~/components/ui/data-table'
-import { useCabos } from '~/hooks/useData'
 import { useCabosStore } from '~/stores/cabos'
 import { LIDERANCAS } from '~/data/mock'
 import { formatNumber } from '~/lib/utils'
@@ -24,12 +23,11 @@ export const Route = createFileRoute('/_app/cabos')({
 })
 
 function Cabos() {
-  const cabos = useCabos()
   const cadastrados = useCabosStore((s) => s.cadastrados)
   const adicionarCabo = useCabosStore((s) => s.adicionar)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const listaBase = [...cadastrados, ...cabos]
+  const listaBase = cadastrados
 
   return (
     <div className="space-y-6">
