@@ -11,7 +11,6 @@ import { PageHeader } from '~/components/ui/page-header'
 import { Button } from '~/components/ui/button'
 import { Input, Label, Select, Badge } from '~/components/ui/input'
 import { Card } from '~/components/ui/card'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '~/components/ui/tabs'
 import { AvatarInitials } from '~/components/ui/avatar'
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter,
@@ -310,7 +309,6 @@ function Eleitores() {
 }
 
 function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose: () => void }) {
-  const [aba, setAba] = useState('pessoais')
   const [cidadeSelecionada, setCidadeSelecionada] = useState(CIDADES[0])
   const [regiaoSelecionada, setRegiaoSelecionada] = useState(regioesDaCidade(CIDADES[0])[0])
   const bairrosDaRegiaoAtual = bairrosDaRegiao(cidadeSelecionada, regiaoSelecionada)
@@ -332,22 +330,11 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
     },
   })
 
-  const campoParaAba: Record<string, string> = {
-    nome: 'pessoais', cpf: 'pessoais', idade: 'pessoais', sexo: 'pessoais',
-    telefone: 'contato', email: 'contato',
-    cidade: 'endereco', regiao: 'endereco', bairro: 'endereco', tipoVia: 'endereco', numero: 'endereco', endereco: 'endereco', zona: 'endereco', secao: 'endereco',
-    escolaridade: 'politica', apoio: 'politica',
-  }
-
   function submit(d: FormData) {
     onSave(d)
   }
 
-  function aoInvalido(errors: Record<string, unknown>) {
-    const primeiro = Object.keys(errors)[0]
-    if (primeiro && campoParaAba[primeiro]) {
-      setAba(campoParaAba[primeiro])
-    }
+  function aoInvalido() {
     toast.error('Preencha os campos obrigatórios antes de salvar.')
   }
 
@@ -363,119 +350,122 @@ function EleitorModal({ onSave, onClose }: { onSave: (d: FormData) => void; onCl
           <SheetHeader>
             <SheetTitle>Novo eleitor</SheetTitle>
           </SheetHeader>
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            <Tabs value={aba} onValueChange={setAba}>
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="pessoais">Pessoais</TabsTrigger>
-              <TabsTrigger value="contato">Contato</TabsTrigger>
-              <TabsTrigger value="endereco">Endereço</TabsTrigger>
-              <TabsTrigger value="politica">Política</TabsTrigger>
-            </TabsList>
+          <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Dados pessoais</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Nome" error={f('nome').error}>
+                  <Input {...form.register('nome')} placeholder="Maria Silva" />
+                </Field>
+                <Field label="CPF" error={f('cpf').error}>
+                  <Input {...form.register('cpf')} placeholder="000.000.000-00" />
+                </Field>
+                <Field label="Idade" error={f('idade').error}>
+                  <Input type="number" {...form.register('idade')} />
+                </Field>
+                <Field label="Sexo" error={f('sexo').error}>
+                  <Select {...form.register('sexo')}>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Masculino">Masculino</option>
+                  </Select>
+                </Field>
+              </div>
+            </section>
 
-            <TabsContent value="pessoais" forceMount className={aba !== 'pessoais' ? 'hidden' : 'grid grid-cols-2 gap-3'}>
-              <Field label="Nome" error={f('nome').error}>
-                <Input {...form.register('nome')} placeholder="Maria Silva" />
-              </Field>
-              <Field label="CPF" error={f('cpf').error}>
-                <Input {...form.register('cpf')} placeholder="000.000.000-00" />
-              </Field>
-              <Field label="Idade" error={f('idade').error}>
-                <Input type="number" {...form.register('idade')} />
-              </Field>
-              <Field label="Sexo" error={f('sexo').error}>
-                <Select {...form.register('sexo')}>
-                  <option value="Feminino">Feminino</option>
-                  <option value="Masculino">Masculino</option>
-                </Select>
-              </Field>
-            </TabsContent>
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Contato</h3>
+              <div className="grid grid-cols-1 gap-3">
+                <Field label="Telefone" error={f('telefone').error}>
+                  <Input {...form.register('telefone')} placeholder="(11) 9..." />
+                </Field>
+                <Field label="E-mail" error={f('email').error}>
+                  <Input {...form.register('email')} placeholder="voce@email.com" />
+                </Field>
+              </div>
+            </section>
 
-            <TabsContent value="contato" forceMount className={aba !== 'contato' ? 'hidden' : 'grid grid-cols-1 gap-3'}>
-              <Field label="Telefone" error={f('telefone').error}>
-                <Input {...form.register('telefone')} placeholder="(11) 9..." />
-              </Field>
-              <Field label="E-mail" error={f('email').error}>
-                <Input {...form.register('email')} placeholder="voce@email.com" />
-              </Field>
-            </TabsContent>
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Endereço</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Cidade" error={f('cidade').error}>
+                  <Select
+                    value={cidadeSelecionada}
+                    onChange={(e) => {
+                      const novaCidade = e.target.value
+                      const novasRegioes = regioesDaCidade(novaCidade)
+                      const novaRegiao = novasRegioes[0]
+                      setCidadeSelecionada(novaCidade)
+                      setRegiaoSelecionada(novaRegiao)
+                      form.setValue('cidade', novaCidade, { shouldValidate: true })
+                      form.setValue('regiao', novaRegiao, { shouldValidate: true })
+                      form.setValue('bairro', bairrosDaRegiao(novaCidade, novaRegiao)[0] ?? '', { shouldValidate: true })
+                    }}
+                  >
+                    {CIDADES.map((c) => <option key={c}>{c}</option>)}
+                  </Select>
+                </Field>
+                <Field label="Região" error={f('regiao').error}>
+                  <Select
+                    value={regiaoSelecionada}
+                    onChange={(e) => {
+                      const novaRegiao = e.target.value
+                      setRegiaoSelecionada(novaRegiao)
+                      form.setValue('regiao', novaRegiao, { shouldValidate: true })
+                      form.setValue('bairro', bairrosDaRegiao(cidadeSelecionada, novaRegiao)[0] ?? '', { shouldValidate: true })
+                    }}
+                  >
+                    {regioesDaCidade(cidadeSelecionada).map((r) => <option key={r}>{r}</option>)}
+                  </Select>
+                </Field>
+                <Field label="Bairro" error={f('bairro').error}>
+                  <Select
+                    value={form.watch('bairro')}
+                    onChange={(e) => form.setValue('bairro', e.target.value, { shouldValidate: true })}
+                  >
+                    {bairrosDaRegiaoAtual.map((b) => <option key={b}>{b}</option>)}
+                  </Select>
+                </Field>
+                <Field label="Tipo de Via" error={f('tipoVia').error}>
+                  <Select {...form.register('tipoVia')}>
+                    {TIPOS_VIA.map((t) => <option key={t}>{t}</option>)}
+                  </Select>
+                </Field>
+                <Field label="Número" error={f('numero').error}>
+                  <Input {...form.register('numero')} placeholder="123" />
+                </Field>
+                <Field label="Endereço" error={f('endereco').error} className="col-span-2">
+                  <Input {...form.register('endereco')} placeholder="Nome da via/logradouro" />
+                </Field>
+                <Field label="Zona" error={f('zona').error}>
+                  <Input type="number" {...form.register('zona')} />
+                </Field>
+                <Field label="Seção" error={f('secao').error}>
+                  <Input type="number" {...form.register('secao')} />
+                </Field>
+              </div>
+            </section>
 
-            <TabsContent value="endereco" forceMount className={aba !== 'endereco' ? 'hidden' : 'grid grid-cols-2 gap-3'}>
-              <Field label="Cidade" error={f('cidade').error}>
-                <Select
-                  value={cidadeSelecionada}
-                  onChange={(e) => {
-                    const novaCidade = e.target.value
-                    const novasRegioes = regioesDaCidade(novaCidade)
-                    const novaRegiao = novasRegioes[0]
-                    setCidadeSelecionada(novaCidade)
-                    setRegiaoSelecionada(novaRegiao)
-                    form.setValue('cidade', novaCidade, { shouldValidate: true })
-                    form.setValue('regiao', novaRegiao, { shouldValidate: true })
-                    form.setValue('bairro', bairrosDaRegiao(novaCidade, novaRegiao)[0] ?? '', { shouldValidate: true })
-                  }}
-                >
-                  {CIDADES.map((c) => <option key={c}>{c}</option>)}
-                </Select>
-              </Field>
-              <Field label="Região" error={f('regiao').error}>
-                <Select
-                  value={regiaoSelecionada}
-                  onChange={(e) => {
-                    const novaRegiao = e.target.value
-                    setRegiaoSelecionada(novaRegiao)
-                    form.setValue('regiao', novaRegiao, { shouldValidate: true })
-                    form.setValue('bairro', bairrosDaRegiao(cidadeSelecionada, novaRegiao)[0] ?? '', { shouldValidate: true })
-                  }}
-                >
-                  {regioesDaCidade(cidadeSelecionada).map((r) => <option key={r}>{r}</option>)}
-                </Select>
-              </Field>
-              <Field label="Bairro" error={f('bairro').error}>
-                <Select
-                  value={form.watch('bairro')}
-                  onChange={(e) => form.setValue('bairro', e.target.value, { shouldValidate: true })}
-                >
-                  {bairrosDaRegiaoAtual.map((b) => <option key={b}>{b}</option>)}
-                </Select>
-              </Field>
-              <Field label="Tipo de Via" error={f('tipoVia').error}>
-                <Select {...form.register('tipoVia')}>
-                  {TIPOS_VIA.map((t) => <option key={t}>{t}</option>)}
-                </Select>
-              </Field>
-              <Field label="Número" error={f('numero').error}>
-                <Input {...form.register('numero')} placeholder="123" />
-              </Field>
-              <Field label="Endereço" error={f('endereco').error} className="col-span-2">
-                <Input {...form.register('endereco')} placeholder="Nome da via/logradouro" />
-              </Field>
-              <Field label="Zona" error={f('zona').error}>
-                <Input type="number" {...form.register('zona')} />
-              </Field>
-              <Field label="Seção" error={f('secao').error}>
-                <Input type="number" {...form.register('secao')} />
-              </Field>
-            </TabsContent>
-
-            <TabsContent value="politica" forceMount className={aba !== 'politica' ? 'hidden' : 'grid grid-cols-2 gap-3'}>
-              <Field label="Escolaridade" error={f('escolaridade').error}>
-                <Select {...form.register('escolaridade')}>
-                  <option value="Fundamental">Fundamental</option>
-                  <option value="Médio">Médio</option>
-                  <option value="Superior">Superior</option>
-                  <option value="Pós-graduação">Pós-graduação</option>
-                </Select>
-              </Field>
-              <Field label="Grau de apoio" error={f('apoio').error}>
-                <Select {...form.register('apoio')}>
-                  <option value="ferrenho">Ferrenho</option>
-                  <option value="provavel">Provável</option>
-                  <option value="indeciso">Indeciso</option>
-                  <option value="adversario">Adversário</option>
-                </Select>
-              </Field>
-            </TabsContent>
-          </Tabs>
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Política</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Escolaridade" error={f('escolaridade').error}>
+                  <Select {...form.register('escolaridade')}>
+                    <option value="Fundamental">Fundamental</option>
+                    <option value="Médio">Médio</option>
+                    <option value="Superior">Superior</option>
+                    <option value="Pós-graduação">Pós-graduação</option>
+                  </Select>
+                </Field>
+                <Field label="Grau de apoio" error={f('apoio').error}>
+                  <Select {...form.register('apoio')}>
+                    <option value="ferrenho">Ferrenho</option>
+                    <option value="provavel">Provável</option>
+                    <option value="indeciso">Indeciso</option>
+                    <option value="adversario">Adversário</option>
+                  </Select>
+                </Field>
+              </div>
+            </section>
           </div>
 
           <SheetFooter>
