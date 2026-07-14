@@ -26,10 +26,19 @@ function Liderancas() {
   const liderancas = useLiderancas()
   const cadastradas = useLiderancasStore((s) => s.cadastradas)
   const adicionarLideranca = useLiderancasStore((s) => s.adicionar)
+  const registrarConversao = useLiderancasStore((s) => s.registrarConversao)
+  const override = useLiderancasStore((s) => s.override)
   const [q, setQ] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
+  const [detalhe, setDetalhe] = useState<Lideranca | null>(null)
 
-  const listaBase = [...cadastradas, ...liderancas]
+  const view = (l: Lideranca): Lideranca & { engajamento: number } => {
+    const merge = { ...l, ...(override[l.id] ?? {}) }
+    const engajamento = Math.min(100, Math.round((merge.convertidos / Math.max(merge.eleitores, 1)) * 100))
+    return { ...merge, engajamento }
+  }
+
+  const listaBase = [...cadastradas, ...liderancas].map(view)
 
   const filtradas = listaBase.filter((l) =>
     l.nome.toLowerCase().includes(q.toLowerCase()) ||
@@ -62,6 +71,9 @@ function Liderancas() {
                   {l.ativo ? 'Ativo' : 'Inativo'}
                 </Badge>
               </div>
+              <Button variant="ghost" size="sm" className="mt-3 w-full" onClick={() => setDetalhe(l)}>
+                Ver detalhes
+              </Button>
               <div className="mt-4 space-y-1.5">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Meta de conversão</span>
@@ -81,8 +93,16 @@ function Liderancas() {
                   <p className="font-medium">{formatNumber(l.eleitores)}</p>
                 </div>
                 <div>
+                  <p className="text-xs text-muted-foreground">Convertidos</p>
+                  <p className="font-medium">{formatNumber(l.convertidos)}</p>
+                </div>
+                <div>
                   <p className="text-xs text-muted-foreground">Engajamento</p>
                   <p className="font-medium">{l.engajamento}%</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Meta atingida</p>
+                  <p className="font-medium">{Math.round((l.convertidos / Math.max(l.meta, 1)) * 100)}%</p>
                 </div>
               </div>
             </Card>
@@ -119,6 +139,11 @@ function Liderancas() {
                   <Badge variant="info">{l.engajamento}%</Badge>
                 ) },
                 { key: 'meta', header: 'Meta', sortable: true, sortValue: (l: Lideranca) => l.meta, render: (l) => formatNumber(l.meta) },
+                { key: 'metaAtingida', header: 'Meta %', sortable: true, sortValue: (l: Lideranca) => l.convertidos / Math.max(l.meta, 1), render: (l) => (
+                  <Badge variant={l.convertidos >= l.meta ? 'success' : 'outline'}>
+                    {Math.round((l.convertidos / Math.max(l.meta, 1)) * 100)}%
+                  </Badge>
+                ) },
               ] as Column<Lideranca>[]
             }
           />
@@ -144,6 +169,17 @@ function Liderancas() {
             setModalOpen(false)
           }}
           onClose={() => setModalOpen(false)}
+        />
+      )}
+
+      {detalhe && (
+        <LiderancaDetalhe
+          lideranca={view(detalhe)}
+          onRegistrarConversao={(convertidosAtual) => {
+            registrarConversao(detalhe.id, convertidosAtual)
+            toast.success('Conversão registrada!', { description: detalhe.nome })
+          }}
+          onClose={() => setDetalhe(null)}
         />
       )}
     </div>
@@ -247,6 +283,94 @@ function LiderancaModal({ onSave, onClose }: { onSave: (d: FormData) => void; on
         </form>
       </SheetContent>
     </Sheet>
+  )
+}
+
+function LiderancaDetalhe({
+  lideranca,
+  onRegistrarConversao,
+  onClose,
+}: {
+  lideranca: Lideranca & { engajamento: number }
+  onRegistrarConversao: (convertidosAtual: number) => void
+  onClose: () => void
+}) {
+  const pctMeta = Math.round((lideranca.convertidos / Math.max(lideranca.meta, 1)) * 100)
+  const metaAtingida = lideranca.convertidos >= lideranca.meta
+
+  return (
+    <Sheet open onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="max-w-xl p-0">
+        <div className="flex h-full flex-col">
+          <SheetHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-brand/15 text-brand">
+                <Crown className="size-5" />
+              </div>
+              <div className="min-w-0">
+                <SheetTitle className="truncate">{lideranca.nome}</SheetTitle>
+                <p className="text-xs text-muted-foreground">{lideranca.bairro}</p>
+              </div>
+              <Badge variant={lideranca.ativo ? 'success' : 'outline'} className="ml-auto">
+                {lideranca.ativo ? 'Ativo' : 'Inativo'}
+              </Badge>
+            </div>
+          </SheetHeader>
+
+          <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Kpi label="Eleitores" value={formatNumber(lideranca.eleitores)} />
+              <Kpi label="Convertidos" value={formatNumber(lideranca.convertidos)} />
+              <Kpi label="Engajamento" value={`${lideranca.engajamento}%`} />
+              <Kpi label="Meta" value={formatNumber(lideranca.meta)} />
+            </div>
+
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Meta de conversão</h3>
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">{pctMeta}% da meta</span>
+                  <span className="font-medium">{metaAtingida ? 'Meta atingida' : 'Em andamento'}</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-border">
+                  <div className="h-full rounded-full brand-gradient" style={{ width: `${Math.min(pctMeta, 100)}%` }} />
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>{formatNumber(lideranca.convertidos)} convertidos</span>
+                  <span>meta {formatNumber(lideranca.meta)}</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold text-muted-foreground">Contato</h3>
+              <div className="rounded-lg border border-border p-3 text-sm">
+                <p className="text-muted-foreground">Telefone</p>
+                <p className="font-medium">{lideranca.telefone}</p>
+              </div>
+            </section>
+          </div>
+
+          <SheetFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
+              <X /> Fechar
+            </Button>
+            <Button type="button" onClick={() => onRegistrarConversao(lideranca.convertidos)}>
+              <Plus /> Registrar conversão
+            </Button>
+          </SheetFooter>
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+function Kpi({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border p-3 text-center">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-lg font-semibold">{value}</p>
+    </div>
   )
 }
 
