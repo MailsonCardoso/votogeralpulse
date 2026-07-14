@@ -251,7 +251,7 @@ function LiderancaModal({ onSave, onClose }: { onSave: (d: FormData) => void; on
                 </Field>
                 <Field label="Bairro" error={f('bairro').error}>
                   <Select {...form.register('bairro')}>
-                    {BAIRROS.map((b) => <option key={b}>{b}</option>)}
+                    {BAIRROS.map((b, i) => <option key={`${b}-${i}`}>{b}</option>)}
                   </Select>
                 </Field>
                 <Field label="Telefone" error={f('telefone').error}>

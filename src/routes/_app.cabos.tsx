@@ -27,15 +27,9 @@ function Cabos() {
   const cabos = useCabos()
   const cadastrados = useCabosStore((s) => s.cadastrados)
   const adicionarCabo = useCabosStore((s) => s.adicionar)
-  const [q, setQ] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
 
   const listaBase = [...cadastrados, ...cabos]
-
-  const filtrados = listaBase.filter((c) =>
-    c.nome.toLowerCase().includes(q.toLowerCase()) ||
-    c.regiao.toLowerCase().includes(q.toLowerCase()),
-  )
 
   return (
     <div className="space-y-6">
@@ -46,7 +40,7 @@ function Cabos() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtrados.length === 0 ? (
+        {listaBase.length === 0 ? (
           <Card className="col-span-full flex flex-col items-center justify-center gap-4 py-20 text-center">
             <Network className="size-16 text-muted-foreground/40" />
             <div>
@@ -57,7 +51,7 @@ function Cabos() {
             </div>
           </Card>
         ) : (
-          filtrados.map((c) => {
+          listaBase.map((c) => {
             const pct = c.performance
             const nomeLideranca = LIDERANCAS.find((l) => l.id === c.liderancaId)?.nome
             return (
@@ -121,7 +115,7 @@ function Cabos() {
         </CardHeader>
         <CardContent>
           <DataTable
-            data={filtrados}
+            data={listaBase}
             pageSize={8}
             searchable
             searchKeys={['nome', 'regiao']}
@@ -238,7 +232,7 @@ function CaboModal({ onSave, onClose }: { onSave: (d: FormData) => void; onClose
                 </Field>
                 <Field label="Bairro / Região" error={f('regiao').error} className="col-span-2">
                   <Select {...form.register('regiao')}>
-                    {BAIRROS.map((b) => <option key={b}>{b}</option>)}
+                    {BAIRROS.map((b, i) => <option key={`${b}-${i}`}>{b}</option>)}
                   </Select>
                 </Field>
               </div>
