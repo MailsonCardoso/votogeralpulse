@@ -7,7 +7,6 @@ import type {
   Escolaridade,
   Evento,
   Lideranca,
-  MembroEquipe,
   Mensagem,
   MetricasSemana,
   Movimentacao,
@@ -118,23 +117,6 @@ export const CABOS: Cabo[] = Array.from({ length: 20 }).map((_, i) => {
 })
 
 export const ELEITORES: Eleitor[] = []
-
-export const EQUIPE: MembroEquipe[] = Array.from({ length: 14 }).map((_, i) => {
-  const nome = nomeCompleto()
-  return {
-    id: `eq-${i + 1}`,
-    nome,
-    papel: pick([
-      'Coordenador', 'Cab furado', 'Liderança', 'Voluntário',
-      'Assessor', 'Analista de Dados', 'Social Media', 'Financeiro',
-    ]),
-    email: email(nome),
-    telefone: telefone(),
-    bairro: pick(BAIRROS),
-    ativo: rand() > 0.1,
-    entrouEm: new Date(2025, between(0, 11), between(1, 28)).toISOString(),
-  }
-})
 
 export const VISITAS: Visita[] = Array.from({ length: 30 }).map((_, i) => {
   const status = pick(['agendada', 'concluida', 'concluida', 'cancelada'] as const)
@@ -302,10 +284,10 @@ export const NOTIFICACOES: Notificacao[] = [
 ]
 
 export const ATIVIDADES: Atividade[] = Array.from({ length: 10 }).map((_, i) => {
-  const u = pick(EQUIPE)
+  const u = pick(['Maria Silva', 'João Souza', 'Ana Lima', 'Carlos Pereira', 'Beatriz Rocha'])
   return {
     id: `atv-${i + 1}`,
-    usuario: u.nome,
+    usuario: u,
     acao: pick([
       'cadastrou', 'atualizou', 'converteu', 'agendou visita para',
       'enviou mensagem para', 'marcou como apoio', 'reopenou',

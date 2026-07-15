@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import * as mock from '~/data/mock'
 import type { Apoio, Eleitor, Lideranca, MembroEquipe } from '~/data/types'
 import { useEquipeStore } from '~/stores/equipe'
@@ -24,8 +23,7 @@ export function useCabos() {
   return mock.CABOS
 }
 export function useEquipe(): MembroEquipe[] {
-  const cadastrados = useEquipeStore((s) => s.cadastrados)
-  return useMemo<MembroEquipe[]>(() => [...cadastrados, ...mock.EQUIPE], [cadastrados])
+  return useEquipeStore((s) => s.cadastrados)
 }
 export function useVisitas() {
   return mock.VISITAS

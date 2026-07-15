@@ -131,7 +131,6 @@ function Equipe() {
                 ) },
                 { key: 'papel', header: 'Papel', sortable: true, sortValue: (m: MembroEquipe) => m.papel, render: (m) => <Badge variant="info">{m.papel}</Badge> },
                 { key: 'bairro', header: 'Bairro', sortable: true, sortValue: (m: MembroEquipe) => m.bairro },
-                { key: 'email', header: 'Email', render: (m) => <span className="text-muted-foreground">{m.email}</span> },
                 { key: 'telefone', header: 'Telefone', render: (m) => <span className="text-muted-foreground">{m.telefone}</span> },
                 { key: 'entrouEm', header: 'Desde', sortable: true, sortValue: (m: MembroEquipe) => m.entrouEm, render: (m) => formatDate(m.entrouEm) },
                 { key: 'ativo', header: 'Status', sortable: true, sortValue: (m: MembroEquipe) => m.ativo ? 1 : 0, render: (m) => (
