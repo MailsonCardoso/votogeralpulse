@@ -23,6 +23,8 @@ const toSnake = (obj) => {
   return out
 }
 
+const serialize = (v) => (v && typeof v === 'object' ? JSON.stringify(v) : v)
+
 const toCamel = (rows) =>
   (Array.isArray(rows) ? rows : [rows]).map((row) => {
     const out = {}
@@ -51,7 +53,7 @@ export async function getRow(table, id) {
 export async function insertRow(table, payload) {
   const data = toSnake(payload)
   const cols = Object.keys(data)
-  const vals = Object.values(data)
+  const vals = Object.values(data).map(serialize)
   const sql = `INSERT INTO \`${table}\` (${cols
     .map((c) => `\`${c}\``)
     .join(', ')}) VALUES (${cols.map(() => '?').join(', ')})`
@@ -65,7 +67,7 @@ export async function updateRow(table, id, payload) {
   const cols = Object.keys(data)
   if (!cols.length) return getRow(table, id)
   const sql = `UPDATE \`${table}\` SET ${cols.map((c) => `\`${c}\` = ?`).join(', ')} WHERE id = ?`
-  await pool.query(sql, [...Object.values(data), id])
+  await pool.query(sql, [...Object.values(data).map(serialize), id])
   return getRow(table, id)
 }
 

@@ -20,6 +20,12 @@ const RESOURCES = {
   cabos: 'cabos',
   eleitores: 'eleitores',
   visitas: 'visitas',
+  pesquisas: 'pesquisas',
+  eventos: 'eventos',
+  conversas: 'conversas',
+  movimentacoes: 'movimentacoes',
+  notificacoes: 'notificacoes',
+  atividades: 'atividades',
 }
 
 for (const [route, table] of Object.entries(RESOURCES)) {

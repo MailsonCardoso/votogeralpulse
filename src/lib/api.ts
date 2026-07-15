@@ -13,7 +13,18 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return (await res.json()) as T
 }
 
-export type Resource = 'funcionarios' | 'liderancas' | 'cabos' | 'eleitores' | 'visitas'
+export type Resource =
+  | 'funcionarios'
+  | 'liderancas'
+  | 'cabos'
+  | 'eleitores'
+  | 'visitas'
+  | 'pesquisas'
+  | 'eventos'
+  | 'conversas'
+  | 'movimentacoes'
+  | 'notificacoes'
+  | 'atividades'
 
 export const api = {
   list: <T>(resource: Resource) => request<T[]>(`/${resource}`),
