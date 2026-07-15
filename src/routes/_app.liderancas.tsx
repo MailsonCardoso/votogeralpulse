@@ -6,7 +6,6 @@ import { Badge, Input, Select, Label } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '~/components/ui/sheet'
 import { DataTable, type Column } from '~/components/ui/data-table'
-import { useLiderancas } from '~/hooks/useData'
 import { formatNumber } from '~/lib/utils'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -15,6 +14,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { BAIRROS } from '~/data/constants'
 import { useLiderancasStore } from '~/stores/liderancas'
+import { useEleitoresStore } from '~/stores/eleitores'
 import type { Lideranca } from '~/data/types'
 
 export const Route = createFileRoute('/_app/liderancas')({
@@ -23,12 +23,12 @@ export const Route = createFileRoute('/_app/liderancas')({
 })
 
 function Liderancas() {
-  const liderancas = useLiderancas()
   const cadastradas = useLiderancasStore((s) => s.cadastradas)
   const adicionarLideranca = useLiderancasStore((s) => s.adicionar)
   const patchLideranca = useLiderancasStore((s) => s.patch)
   const registrarConversao = useLiderancasStore((s) => s.registrarConversao)
   const override = useLiderancasStore((s) => s.override)
+  const eleitores = useEleitoresStore((s) => s.cadastrados)
   const [q, setQ] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [detalhe, setDetalhe] = useState<Lideranca | null>(null)
@@ -36,11 +36,20 @@ function Liderancas() {
 
   const view = (l: Lideranca): Lideranca & { engajamento: number } => {
     const merge = { ...l, ...(override[l.id] ?? {}) }
-    const engajamento = Math.min(100, Math.round((merge.convertidos / Math.max(merge.eleitores, 1)) * 100))
-    return { ...merge, engajamento }
+    const els = eleitores.filter((e) => e.liderancaId === l.id)
+    const eleitoresCount = els.length
+    const convertidosCount = els.filter(
+      (e) => e.apoio === 'ferrenho' || e.apoio === 'provavel',
+    ).length
+    const eleitoresCalc = eleitoresCount
+    const convertidosCalc = convertidosCount
+    const engajamento = eleitoresCalc
+      ? Math.min(100, Math.round((convertidosCalc / eleitoresCalc) * 100))
+      : 0
+    return { ...merge, eleitores: eleitoresCalc, convertidos: convertidosCalc, engajamento }
   }
 
-  const listaBase = [...cadastradas, ...liderancas].map(view)
+  const listaBase = cadastradas.map(view)
 
   const filtradas = listaBase.filter((l) =>
     l.nome.toLowerCase().includes(q.toLowerCase()) ||
@@ -178,7 +187,6 @@ function Liderancas() {
                 nome: d.nome,
                 bairro: d.bairro,
                 telefone: d.telefone,
-                eleitores: d.eleitores,
                 meta: d.meta,
                 ativo: d.ativo === 'true',
               })
@@ -190,10 +198,10 @@ function Liderancas() {
                 nome: d.nome,
                 bairro: d.bairro,
                 telefone: d.telefone,
-                eleitores: d.eleitores,
+                eleitores: 0,
                 convertidos: 0,
                 meta: d.meta,
-                engajamento: Math.min(100, Math.round((0 / Math.max(d.eleitores, 1)) * 100)),
+                engajamento: 0,
                 ativo: d.ativo === 'true',
               }
               adicionarLideranca(nova)
@@ -224,7 +232,6 @@ const schema = z.object({
   nome: z.string().min(2, 'Informe o nome'),
   bairro: z.string().min(1, 'Selecione o bairro'),
   telefone: z.string().min(8, 'Telefone inválido'),
-  eleitores: z.coerce.number().min(1, 'Mínimo 1').max(9999),
   meta: z.coerce.number().min(1, 'Mínimo 1').max(9999),
   ativo: z.string().refine((v) => v === 'true' || v === 'false', 'Selecione o status'),
 })
@@ -239,7 +246,6 @@ function LiderancaModal({ initial, onSave, onClose }: { initial?: Lideranca; onS
           nome: initial.nome,
           bairro: initial.bairro,
           telefone: initial.telefone,
-          eleitores: initial.eleitores,
           meta: initial.meta,
           ativo: initial.ativo ? 'true' : 'false',
         }
@@ -247,7 +253,6 @@ function LiderancaModal({ initial, onSave, onClose }: { initial?: Lideranca; onS
           nome: '',
           bairro: BAIRROS[0],
           telefone: '',
-          eleitores: 50,
           meta: 80,
           ativo: 'true',
         },
@@ -294,15 +299,12 @@ function LiderancaModal({ initial, onSave, onClose }: { initial?: Lideranca; onS
             <section className="space-y-3">
               <h3 className="text-sm font-semibold text-muted-foreground">Metas e performance</h3>
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Eleitores" error={f('eleitores').error}>
-                  <Input type="number" {...form.register('eleitores')} />
-                </Field>
                 <Field label="Meta de conversão" error={f('meta').error}>
                   <Input type="number" {...form.register('meta')} />
                 </Field>
                 <Field label="Engajamento" className="col-span-2">
                   <p className="text-sm text-muted-foreground">
-                    Calculado automaticamente: {Math.min(100, Math.round(0 / Math.max(Number(form.watch('eleitores')), 1) * 100))}% da base convertida (convertidos / eleitores).
+                    Calculado automaticamente a partir dos eleitores vinculados a esta liderança (convertidos / eleitores).
                   </p>
                 </Field>
                 <Field label="Status" error={f('ativo').error}>

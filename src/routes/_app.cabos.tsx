@@ -7,7 +7,9 @@ import { Button } from '~/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '~/components/ui/sheet'
 import { DataTable, type Column } from '~/components/ui/data-table'
 import { useCabosStore } from '~/stores/cabos'
-import { LIDERANCAS } from '~/data/mock'
+import { useLiderancasStore } from '~/stores/liderancas'
+import { useEleitoresStore } from '~/stores/eleitores'
+import { useVisitasStore } from '~/stores/visitas'
 import { formatNumber } from '~/lib/utils'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -26,10 +28,26 @@ function Cabos() {
   const cadastrados = useCabosStore((s) => s.cadastrados)
   const adicionarCabo = useCabosStore((s) => s.adicionar)
   const patchCabo = useCabosStore((s) => s.patch)
+  const liderancas = useLiderancasStore((s) => s.cadastradas)
+  const eleitores = useEleitoresStore((s) => s.cadastrados)
+  const visitas = useVisitasStore((s) => s.visitas)
   const [modalOpen, setModalOpen] = useState(false)
   const [editando, setEditando] = useState<Cabo | null>(null)
 
-  const listaBase = cadastrados
+  const derivar = (c: Cabo) => {
+    const els = eleitores.filter((e) => e.caboId === c.id)
+    const eleitoresCount = els.length
+    const convertidosCount = els.filter(
+      (e) => e.apoio === 'ferrenho' || e.apoio === 'provavel',
+    ).length
+    const visitasCount = visitas.filter((v) => v.caboId === c.id).length
+    const performance = eleitoresCount
+      ? Math.round((convertidosCount / eleitoresCount) * 100)
+      : 0
+    return { ...c, eleitores: eleitoresCount, visitas: visitasCount, performance }
+  }
+
+  const listaBase = cadastrados.map(derivar)
 
   return (
     <div className="space-y-6">
@@ -53,7 +71,7 @@ function Cabos() {
         ) : (
           listaBase.map((c) => {
             const pct = c.performance
-            const nomeLideranca = LIDERANCAS.find((l) => l.id === c.liderancaId)?.nome
+            const nomeLideranca = liderancas.find((l) => l.id === c.liderancaId)?.nome
             return (
               <Card key={c.id} className="p-5">
                 <div className="flex items-start gap-3">
@@ -134,7 +152,7 @@ function Cabos() {
                 ) },
                 { key: 'lideranca', header: 'Liderança', render: (c) => (
                   <span className="text-muted-foreground">
-                    {LIDERANCAS.find((l) => l.id === c.liderancaId)?.nome ?? '—'}
+                    {liderancas.find((l) => l.id === c.liderancaId)?.nome ?? '—'}
                   </span>
                 ) },
                 { key: 'regiao', header: 'Região', sortable: true, sortValue: (c: Cabo) => c.regiao },
@@ -157,16 +175,14 @@ function Cabos() {
       {(modalOpen || editando) && (
         <CaboModal
           initial={editando ?? undefined}
+          liderancas={liderancas}
           onSave={(d) => {
             if (editando) {
               patchCabo(editando.id, {
                 nome: d.nome,
                 liderancaId: d.liderancaId,
                 regiao: d.regiao,
-                eleitores: d.eleitores,
-                visitas: d.visitas,
                 meta: d.meta,
-                performance: d.performance,
               })
               toast.success('Cabo atualizado!', { description: d.nome })
               setEditando(null)
@@ -176,10 +192,10 @@ function Cabos() {
                 nome: d.nome,
                 liderancaId: d.liderancaId,
                 regiao: d.regiao,
-                eleitores: d.eleitores,
-                visitas: d.visitas,
+                eleitores: 0,
+                visitas: 0,
                 meta: d.meta,
-                performance: d.performance,
+                performance: 0,
               })
               toast.success('Cabo cadastrado!', { description: d.nome })
               setModalOpen(false)
@@ -196,15 +212,17 @@ const schema = z.object({
   nome: z.string().min(2, 'Informe o nome'),
   liderancaId: z.string().min(1, 'Selecione a liderança'),
   regiao: z.string().min(1, 'Selecione o bairro/região'),
-  eleitores: z.coerce.number().min(0, 'Mínimo 0').max(9999),
-  visitas: z.coerce.number().min(0, 'Mínimo 0').max(9999),
   meta: z.coerce.number().min(1, 'Mínimo 1').max(9999),
-  performance: z.coerce.number().min(0, 'Mínimo 0').max(100),
 })
 
 type FormData = z.infer<typeof schema>
 
-function CaboModal({ initial, onSave, onClose }: { initial?: Cabo; onSave: (d: FormData) => void; onClose: () => void }) {
+function CaboModal({ initial, liderancas, onSave, onClose }: {
+  initial?: Cabo
+  liderancas: { id: string; nome: string }[]
+  onSave: (d: FormData) => void
+  onClose: () => void
+}) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: initial
@@ -212,19 +230,13 @@ function CaboModal({ initial, onSave, onClose }: { initial?: Cabo; onSave: (d: F
           nome: initial.nome,
           liderancaId: initial.liderancaId,
           regiao: initial.regiao,
-          eleitores: initial.eleitores,
-          visitas: initial.visitas,
           meta: initial.meta,
-          performance: initial.performance,
         }
       : {
           nome: '',
-          liderancaId: LIDERANCAS[0]?.id ?? '',
+          liderancaId: liderancas[0]?.id ?? '',
           regiao: BAIRROS[0],
-          eleitores: 30,
-          visitas: 10,
           meta: 50,
-          performance: 60,
         },
   })
 
@@ -257,7 +269,7 @@ function CaboModal({ initial, onSave, onClose }: { initial?: Cabo; onSave: (d: F
                 </Field>
                 <Field label="Liderança" error={f('liderancaId').error} className="col-span-2">
                   <Select {...form.register('liderancaId')}>
-                    {LIDERANCAS.map((l) => (
+                    {liderancas.map((l) => (
                       <option key={l.id} value={l.id}>{l.nome}</option>
                     ))}
                   </Select>
@@ -273,17 +285,13 @@ function CaboModal({ initial, onSave, onClose }: { initial?: Cabo; onSave: (d: F
             <section className="space-y-3">
               <h3 className="text-sm font-semibold text-muted-foreground">Metas e performance</h3>
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Eleitores" error={f('eleitores').error}>
-                  <Input type="number" {...form.register('eleitores')} />
-                </Field>
-                <Field label="Visitas" error={f('visitas').error}>
-                  <Input type="number" {...form.register('visitas')} />
-                </Field>
                 <Field label="Meta" error={f('meta').error}>
                   <Input type="number" {...form.register('meta')} />
                 </Field>
-                <Field label="Performance (%)" error={f('performance').error}>
-                  <Input type="number" {...form.register('performance')} />
+                <Field label="Performance" className="col-span-2">
+                  <p className="text-sm text-muted-foreground">
+                    Calculada automaticamente a partir dos eleitores e visitas vinculados a este cabo.
+                  </p>
                 </Field>
               </div>
             </section>

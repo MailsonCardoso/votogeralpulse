@@ -1,6 +1,10 @@
 import * as mock from '~/data/mock'
 import type { Apoio, Eleitor, Lideranca, MembroEquipe } from '~/data/types'
 import { useEquipeStore } from '~/stores/equipe'
+import { useEleitoresStore } from '~/stores/eleitores'
+import { useLiderancasStore } from '~/stores/liderancas'
+import { useCabosStore } from '~/stores/cabos'
+import { useVisitasStore } from '~/stores/visitas'
 
 /**
  * Hooks que envolvem os dados mockados. Hoje retornam os mocks diretamente,
@@ -13,20 +17,20 @@ export function useEleitores(_filtros?: {
   bairro?: string
   apoio?: Apoio | 'todos'
 }) {
-  return [] as Eleitor[]
+  return useEleitoresStore((s) => s.cadastrados)
 }
 
 export function useLiderancas() {
-  return [] as Lideranca[]
+  return useLiderancasStore((s) => s.cadastradas)
 }
 export function useCabos() {
-  return mock.CABOS
+  return useCabosStore((s) => s.cadastrados)
 }
 export function useEquipe(): MembroEquipe[] {
   return useEquipeStore((s) => s.cadastrados)
 }
 export function useVisitas() {
-  return mock.VISITAS
+  return useVisitasStore((s) => s.visitas)
 }
 export function usePesquisas() {
   return mock.PESQUISAS

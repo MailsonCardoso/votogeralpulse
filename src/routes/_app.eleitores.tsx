@@ -19,6 +19,8 @@ import { DataTable, type Column } from '~/components/ui/data-table'
 import { useEleitores, APOIO_META } from '~/hooks/useData'
 import { useFilters } from '~/stores/filters'
 import { useEleitoresStore } from '~/stores/eleitores'
+import { useLiderancasStore } from '~/stores/liderancas'
+import { useCabosStore } from '~/stores/cabos'
 import { CIDADES, regioesDaCidade, bairrosDaRegiao, TIPOS_VIA } from '~/data/constants'
 import { formatDate, initials } from '~/lib/utils'
 import type { Apoio, Eleitor } from '~/data/types'
@@ -50,7 +52,6 @@ export const Route = createFileRoute('/_app/eleitores')({
 
 function Eleitores() {
   const filtros = useFilters()
-  const cadastrados = useEleitoresStore((s) => s.cadastrados)
   const adicionarEleitor = useEleitoresStore((s) => s.adicionar)
   const atualizarEleitor = useEleitoresStore((s) => s.atualizar)
   const eleitores = useEleitores({
@@ -58,7 +59,7 @@ function Eleitores() {
     bairro: filtros.bairro,
     apoio: filtros.apoio,
   })
-  const listaBase = [...cadastrados, ...eleitores]
+  const listaBase = eleitores
   const lista = listaBase.filter((e) => {
     if (filtros.cidade !== 'todos' && e.cidade !== filtros.cidade) return false
     if (filtros.regiao !== 'todos' && e.regiao !== filtros.regiao) return false
@@ -73,8 +74,10 @@ function Eleitores() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editando, setEditando] = useState<Eleitor | null>(null)
   const [detalhe, setDetalhe] = useState<Eleitor | null>(null)
+  const liderancas = useLiderancasStore((s) => s.cadastradas)
+  const cabos = useCabosStore((s) => s.cadastrados)
 
-  function salvarEleitor(d: FormData, id?: string) {
+  function salvarEleitor(d: FormData, id?: string, liderancaId?: string, caboId?: string) {
     const base = id ? listaBase.find((e) => e.id === id) : undefined
     const eleitor: Eleitor = {
       id: id ?? `elt-${Date.now()}`,
@@ -94,8 +97,8 @@ function Eleitores() {
       email: d.email,
       escolaridade: d.escolaridade,
       apoio: d.apoio,
-      liderancaId: base?.liderancaId ?? '',
-      caboId: base?.caboId ?? '',
+      liderancaId: liderancaId ?? base?.liderancaId ?? '',
+      caboId: caboId ?? base?.caboId ?? '',
       cadastradoEm: base?.cadastradoEm ?? new Date().toISOString(),
       ultimaInteracao: new Date().toISOString(),
     }
@@ -240,7 +243,7 @@ function Eleitores() {
 
       {modalOpen && (
         <EleitorModal
-          onSave={(d, id) => salvarEleitor(d, id)}
+          onSave={(d, id, liderancaId, caboId) => salvarEleitor(d, id, liderancaId, caboId)}
           onClose={() => setModalOpen(false)}
         />
       )}
@@ -248,7 +251,7 @@ function Eleitores() {
       {editando && (
         <EleitorModal
           initial={editando}
-          onSave={(d, id) => salvarEleitor(d, id)}
+          onSave={(d, id, liderancaId, caboId) => salvarEleitor(d, id, liderancaId, caboId)}
           onClose={() => setEditando(null)}
         />
       )}
@@ -294,6 +297,14 @@ function Eleitores() {
                   <span>{detalhe.bairro}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-muted-foreground">Liderança</span>
+                  <span>{liderancas.find((l) => l.id === detalhe.liderancaId)?.nome ?? '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Cabo</span>
+                  <span>{cabos.find((c) => c.id === detalhe.caboId)?.nome ?? '—'}</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-muted-foreground">Tipo de Via</span>
                   <span>{detalhe.tipoVia}</span>
                 </div>
@@ -334,12 +345,17 @@ function Eleitores() {
 
 function EleitorModal({ initial, onSave, onClose }: {
   initial?: Eleitor
-  onSave: (d: FormData, id?: string) => void
+  onSave: (d: FormData, id?: string, liderancaId?: string, caboId?: string) => void
   onClose: () => void
 }) {
+  const liderancas = useLiderancasStore((s) => s.cadastradas)
+  const cabos = useCabosStore((s) => s.cadastrados)
   const [cidadeSelecionada, setCidadeSelecionada] = useState(initial?.cidade ?? CIDADES[0])
   const [regiaoSelecionada, setRegiaoSelecionada] = useState(initial?.regiao ?? regioesDaCidade(CIDADES[0])[0])
+  const [liderancaId, setLiderancaId] = useState(initial?.liderancaId ?? '')
+  const [caboId, setCaboId] = useState(initial?.caboId ?? '')
   const bairrosDaRegiaoAtual = bairrosDaRegiao(cidadeSelecionada, regiaoSelecionada)
+  const cabosDaLideranca = liderancaId ? cabos.filter((c) => c.liderancaId === liderancaId) : cabos
 
   const padroes = {
     sexo: 'Feminino' as const,
@@ -381,7 +397,7 @@ function EleitorModal({ initial, onSave, onClose }: {
   })
 
   function submit(d: FormData) {
-    onSave(d, initial?.id)
+    onSave(d, initial?.id, liderancaId, caboId)
   }
 
   function aoInvalido() {
@@ -512,6 +528,31 @@ function EleitorModal({ initial, onSave, onClose }: {
                     <option value="provavel">Provável</option>
                     <option value="indeciso">Indeciso</option>
                     <option value="adversario">Adversário</option>
+                  </Select>
+                </Field>
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Equipe de prospecção</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Liderança" className="col-span-2">
+                  <Select
+                    value={liderancaId}
+                    onChange={(e) => {
+                      const id = e.target.value
+                      setLiderancaId(id)
+                      setCaboId('')
+                    }}
+                  >
+                    <option value="">Nenhuma</option>
+                    {liderancas.map((l) => <option key={l.id} value={l.id}>{l.nome}</option>)}
+                  </Select>
+                </Field>
+                <Field label="Cabo" className="col-span-2">
+                  <Select value={caboId} onChange={(e) => setCaboId(e.target.value)}>
+                    <option value="">Nenhum</option>
+                    {cabosDaLideranca.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
                   </Select>
                 </Field>
               </div>
