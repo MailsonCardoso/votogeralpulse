@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Flag, Plus, MapPin, Users } from 'lucide-react'
+import { toast } from 'sonner'
 import { PageHeader } from '~/components/ui/page-header'
 import { Card, CardContent } from '~/components/ui/card'
 import { Badge } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
+import { EventoModal } from '~/components/forms/EventoModal'
 import { useEventos } from '~/hooks/useData'
+import { useEventosStore } from '~/stores/eventos'
 import { formatDate, formatNumber } from '~/lib/utils'
 import type { StatusEvento } from '~/data/types'
 
@@ -22,13 +26,15 @@ const STATUS: Record<StatusEvento, { label: string; variant: 'success' | 'info' 
 
 function Eventos() {
   const eventos = useEventos()
+  const adicionarEvento = useEventosStore((s) => s.adicionar)
+  const [modalOpen, setModalOpen] = useState(false)
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Eventos"
         description="Comícios, caminhadas e mobilizações da campanha."
-        actions={<Button><Plus /> Criar evento</Button>}
+        actions={<Button onClick={() => setModalOpen(true)}><Plus /> Criar evento</Button>}
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -55,6 +61,17 @@ function Eventos() {
           )
         })}
       </div>
+
+      {modalOpen && (
+        <EventoModal
+          onSave={(e) => {
+            adicionarEvento(e)
+            toast.success('Evento criado!', { description: e.titulo })
+            setModalOpen(false)
+          }}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   )
 }

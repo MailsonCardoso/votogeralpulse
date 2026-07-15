@@ -3,11 +3,14 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { CalendarDays, ChevronLeft, ChevronRight, Plus, MapPin } from 'lucide-react'
+import { toast } from 'sonner'
 import { PageHeader } from '~/components/ui/page-header'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/input'
+import { EventoModal } from '~/components/forms/EventoModal'
 import { useEventos } from '~/hooks/useData'
+import { useEventosStore } from '~/stores/eventos'
 import { formatDate } from '~/lib/utils'
 
 export const Route = createFileRoute('/_app/agenda')({
@@ -20,6 +23,8 @@ const DIAS = ['D','S','T','Q','Q','S','S']
 
 function Agenda() {
   const eventos = useEventos()
+  const adicionarEvento = useEventosStore((s) => s.adicionar)
+  const [modalOpen, setModalOpen] = useState(false)
   const [ano, setAno] = useState(2026)
   const [mes, setMes] = useState(5)
 
@@ -46,7 +51,7 @@ function Agenda() {
       <PageHeader
         title="Agenda"
         description="Calendário de eventos e compromissos de campanha."
-        actions={<Button><Plus /> Novo evento</Button>}
+        actions={<Button onClick={() => setModalOpen(true)}><Plus /> Novo evento</Button>}
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -121,6 +126,17 @@ function Agenda() {
           </CardContent>
         </Card>
       </div>
+
+      {modalOpen && (
+        <EventoModal
+          onSave={(e) => {
+            adicionarEvento(e)
+            toast.success('Evento criado!', { description: e.titulo })
+            setModalOpen(false)
+          }}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   )
 }

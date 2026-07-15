@@ -19,6 +19,8 @@ import { useLiderancasStore } from '~/stores/liderancas'
 import { useCabosStore } from '~/stores/cabos'
 import { useEquipeStore } from '~/stores/equipe'
 import { useVisitasStore } from '~/stores/visitas'
+import { useEventosStore } from '~/stores/eventos'
+import { usePesquisasStore } from '~/stores/pesquisas'
 
 /**
  * Hooks de leitura. Os 6 recursos extras (pesquisas, eventos, conversas,
@@ -84,10 +86,10 @@ export function useVisitas() {
   return useVisitasStore((s) => s.visitas)
 }
 export function usePesquisas(): Pesquisa[] {
-  return useResourceList<Pesquisa>('pesquisas')
+  return usePesquisasStore((s) => s.pesquisas)
 }
 export function useEventos(): Evento[] {
-  return useResourceList<Evento>('eventos')
+  return useEventosStore((s) => s.eventos)
 }
 export function useConversas(): Conversa[] {
   return useResourceList<Conversa>('conversas')

@@ -1,11 +1,15 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { BarChart3, Plus, Users } from 'lucide-react'
+import { toast } from 'sonner'
 import { PageHeader } from '~/components/ui/page-header'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Badge } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
 import { DonutChart, BarChartCard } from '~/components/charts'
+import { PesquisaModal } from '~/components/forms/PesquisaModal'
 import { usePesquisas } from '~/hooks/useData'
+import { usePesquisasStore } from '~/stores/pesquisas'
 import { formatDate, formatNumber } from '~/lib/utils'
 
 export const Route = createFileRoute('/_app/pesquisas')({
@@ -15,13 +19,15 @@ export const Route = createFileRoute('/_app/pesquisas')({
 
 function Pesquisas() {
   const pesquisas = usePesquisas()
+  const adicionarPesquisa = usePesquisasStore((s) => s.adicionar)
+  const [modalOpen, setModalOpen] = useState(false)
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Pesquisas"
         description="Apuração de intenção de voto e opinião do eleitorado."
-        actions={<Button><Plus /> Nova pesquisa</Button>}
+        actions={<Button onClick={() => setModalOpen(true)}><Plus /> Nova pesquisa</Button>}
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -58,6 +64,17 @@ function Pesquisas() {
           </Card>
         ))}
       </div>
+
+      {modalOpen && (
+        <PesquisaModal
+          onSave={(p) => {
+            adicionarPesquisa(p)
+            toast.success('Pesquisa criada!', { description: p.titulo })
+            setModalOpen(false)
+          }}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   )
 }
