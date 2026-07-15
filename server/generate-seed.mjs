@@ -21,7 +21,7 @@ const ins = (table, obj) => {
     if (typeof v === 'number') return String(v)
     return `'${String(v).replace(/'/g, "''")}'`
   })
-  lines.push(`INSERT INTO \`${table}\` (${cols.map((c) => `\`${c}\``).join(', ')}) VALUES (${vals.join(', ')});`)
+  lines.push(`INSERT IGNORE INTO \`${table}\` (${cols.map((c) => `\`${c}\``).join(', ')}) VALUES (${vals.join(', ')});`)
 }
 
 const liderancas = []
