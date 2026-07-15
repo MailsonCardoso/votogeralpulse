@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import path from 'node:path'
 import dotenv from 'dotenv'
 import { listRows, getRow, insertRow, updateRow, deleteRow } from './db.mjs'
 import { initDb } from './schema.mjs'
@@ -9,6 +10,9 @@ dotenv.config()
 const app = express()
 app.use(cors())
 app.use(express.json())
+
+const DIST = path.join(process.cwd(), 'dist')
+app.use(express.static(DIST))
 
 const RESOURCES = {
   funcionarios: 'funcionarios',
@@ -68,6 +72,10 @@ for (const [route, table] of Object.entries(RESOURCES)) {
 }
 
 const PORT = Number(process.env.PORT || 4000)
+
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(DIST, 'index.html'))
+})
 
 initDb()
   .then(() => {

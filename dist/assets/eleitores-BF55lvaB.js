@@ -1,1 +1,0 @@
-import{f as o,p as t}from"./index-D0F2JsZT.js";const c=o()(t(s=>({cadastrados:[],adicionar:a=>s(r=>({cadastrados:[a,...r.cadastrados]})),atualizar:a=>s(r=>({cadastrados:r.cadastrados.map(d=>d.id===a.id?a:d)})),limpar:()=>s({cadastrados:[]})}),{name:"vg-eleitores"}));export{c as u};

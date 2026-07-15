@@ -56,7 +56,8 @@ export async function insertRow(table, payload) {
     .map((c) => `\`${c}\``)
     .join(', ')}) VALUES (${cols.map(() => '?').join(', ')})`
   const [res] = await pool.query(sql, vals)
-  return getRow(table, res.insertId)
+  const id = data.id ?? res.insertId
+  return getRow(table, id)
 }
 
 export async function updateRow(table, id, payload) {
