@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import * as mock from '~/data/mock'
-import type { Apoio, Eleitor, Lideranca } from '~/data/types'
+import type { Apoio, Eleitor, Lideranca, MembroEquipe } from '~/data/types'
+import { useEquipeStore } from '~/stores/equipe'
 
 /**
  * Hooks que envolvem os dados mockados. Hoje retornam os mocks diretamente,
@@ -22,8 +23,9 @@ export function useLiderancas() {
 export function useCabos() {
   return mock.CABOS
 }
-export function useEquipe() {
-  return mock.EQUIPE
+export function useEquipe(): MembroEquipe[] {
+  const cadastrados = useEquipeStore((s) => s.cadastrados)
+  return useMemo<MembroEquipe[]>(() => [...cadastrados, ...mock.EQUIPE], [cadastrados])
 }
 export function useVisitas() {
   return mock.VISITAS
