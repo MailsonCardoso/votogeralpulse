@@ -3,6 +3,13 @@ node_modules
 npm-debug.log*
 .pnpm-debug.log*
 
+# Environment / secrets
+.env
+.env.local
+
+# Build output
+dist
+
 # Dependencies
 # (package-lock.json / composer.lock are committed for reproducible builds)
 

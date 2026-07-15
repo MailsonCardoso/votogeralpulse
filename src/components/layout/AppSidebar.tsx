@@ -17,7 +17,7 @@ const NAV = [
       { to: '/eleitores', label: 'Eleitores', icon: Users },
       { to: '/liderancas', label: 'Lideranças', icon: Crown },
       { to: '/cabos', label: 'Cabos Eleitorais', icon: Network },
-      { to: '/equipe', label: 'Equipe', icon: UsersRound },
+      { to: '/equipe', label: 'Funcionários', icon: UsersRound },
     ],
   },
   {

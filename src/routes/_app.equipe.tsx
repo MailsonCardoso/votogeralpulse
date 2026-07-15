@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 import type { MembroEquipe } from '~/data/types'
 
 export const Route = createFileRoute('/_app/equipe')({
-  head: () => ({ meta: [{ title: 'Equipe — VotoGeral 360' }] }),
+  head: () => ({ meta: [{ title: 'Funcionários — VotoGeral 360' }] }),
   component: Equipe,
 })
 
@@ -48,7 +48,7 @@ function Equipe() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Equipe"
+        title="Funcionários"
         description="Pessoas que operam a campanha em campo e no quartel-general."
         actions={<Button onClick={() => setModalOpen(true)}><Plus /> Convidar membro</Button>}
       />
@@ -60,7 +60,7 @@ function Equipe() {
             <div>
               <p className="text-lg font-semibold">Nenhum membro encontrado</p>
               <p className="text-sm text-muted-foreground">
-                Clique em "Convidar membro" para adicionar alguém à equipe.
+                Clique em "Convidar membro" para adicionar alguém aos funcionários.
               </p>
             </div>
           </Card>
@@ -197,7 +197,7 @@ function Equipe() {
           <DialogHeader>
             <DialogTitle>Remover membro</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja remover <span className="font-medium text-foreground">{excluindo?.nome}</span> da equipe? Esta ação não pode ser desfeita.
+              Tem certeza que deseja remover <span className="font-medium text-foreground">{excluindo?.nome}</span> dos funcionários? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
